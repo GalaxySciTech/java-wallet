@@ -1,0 +1,17 @@
+server:
+  port: 10888
+
+
+spring:
+  application:
+    name: cl-hsm
+#eureka:
+#  client:
+#    service-url:
+#      default-zone: http://127.0.0.1:8761/eureka/
+#  instance:
+#    instance-id: ${spring.application.name}:${server.port}
+
+keystore:
+  dir: /Users/pie/temp/tem
+  eosDepositAddress:

@@ -1,0 +1,10 @@
+import org.apache.tools.ant.filters.ReplaceTokens
+
+apply plugin: 'application'
+
+mainClassName="com.wallet.WebApiApplicationKt"
+dependencies {
+    compile project(":wallet-common")
+}
+
+

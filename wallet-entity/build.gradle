@@ -1,0 +1,37 @@
+bootRepackage.enabled=false
+
+apply plugin: "com.waykichain.utils.codegen"
+
+dependencies {
+
+    //	// QueryDSL
+    compile "com.querydsl:querydsl-jpa:$querydslVersion"
+//    compile "com.querydsl:querydsl-auth:$querydslVersion"
+    compile "com.querydsl:querydsl-sql-spring:$querydslVersion"
+    compile "com.querydsl:querydsl-sql:$querydslVersion"
+    compile "com.querydsl:querydsl-core:$querydslVersion"
+}
+
+buildscript {
+    repositories {
+        maven { url "https://plugins.gradle.org/m2/" }
+    }
+
+    dependencies {
+        classpath "gradle.plugin.com.waykichain.utils.codegen:querydsl-plugin:1.2.27"
+        classpath 'mysql:mysql-connector-java:5.1.40'
+    }
+}
+
+querydsl {
+    driverClass = 'com.mysql.jdbc.Driver'
+    userName = 'root'
+    password = '123456'
+    jdbcUrl = 'jdbc:mysql://127.0.0.1:3306/wallet_db?allowMultiQueries=true&useSSL=false&autoReconnect=true'
+    domainSrcPath = "$project.projectDir/src/main/java/"
+    domainPackageName = 'com.wallet.entity.domain'
+    repositorySrcPath = "$project.projectDir/src/main/kotlin/"
+    repositoryPackageName = 'com.wallet.repository'
+    serviceSrcPath = "$project.projectDir/../wallet-common/src/main/kotlin/"
+    servicePackageName = 'com.wallet.biz.service'
+}

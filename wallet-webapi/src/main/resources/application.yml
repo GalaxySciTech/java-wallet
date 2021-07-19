@@ -1,0 +1,26 @@
+server:
+  port: 10001
+
+
+spring:
+  application:
+    name: cl-webapi
+  datasource:
+    url: jdbc:mysql://127.0.0.1:3306/wallet_db?allowMultiQueries=true&useSSL=false&characterEncoding=UTF-8&autoReconnect=true
+    username: root
+    password: 123456
+    driver-class-name: com.mysql.jdbc.Driver
+    type: com.zaxxer.hikari.HikariDataSource
+  jackson:
+    date-format: yyyy-MM-dd HH:mm
+#  jpa:
+#    show-sql: true
+#    hibernate:
+#      ddl-auto: update
+
+#eureka:
+#  client:
+#    service-url:
+#      default-zone: http://127.0.0.1:8761/eureka/
+#  instance:
+#    instance-id: ${spring.application.name}:${server.port}

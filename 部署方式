@@ -1,0 +1,9 @@
+centos8环境
+
+先跑deploy.sh脚本
+
+配置好application 里面的数据库连接后
+
+再跑start.sh脚本
+
+如果自己的本地环境，自己研究一下两个shell脚本里面路径，改一下目录，还有数据库等

@@ -1,0 +1,27 @@
+sudo: required
+dist: trusty
+
+matrix:
+  include:
+  - os: linux
+    jdk: openjdk8
+  - os: osx
+    osx_image: xcode8
+
+language: java
+
+install: unset _JAVA_OPTIONS
+script:
+- chmod +x ./gradlew
+- ./gradlew build
+
+before_cache:
+- rm -f $HOME/.gradle/caches/{modules-2,transforms-1}/*.lock
+- rm -rf $HOME/.gradle/caches/*/{file-changes,fileHashes,plugin-resolution,scripts,scripts-remapped,gradle-script-kotlin}/
+cache:
+  directories:
+  - $HOME/.gradle/caches/
+  - $HOME/.gradle/wrapper/
+
+notifications:
+  email: false

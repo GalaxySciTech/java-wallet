@@ -1,0 +1,8 @@
+FROM openjdk:8-jdk-alpine
+VOLUME /tmp
+VOLUME /etc/localtime:/etc/localtime
+COPY  build/libs/cl-webapi-0.0.1-SNAPSHOT.jar /mnt/cl-webapi-0.0.1-SNAPSHOT.jar
+COPY  src/main/resources/application.yml /mnt/application.yml
+ENV PORT 10001
+EXPOSE $PORT
+ENTRYPOINT ["java","-Djava.security.egd=file:/dev/./urandom","-Dserver.port=${PORT}","-jar","/mnt/cl-webapi-0.0.1-SNAPSHOT.jar"]

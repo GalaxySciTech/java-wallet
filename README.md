@@ -3,54 +3,66 @@
 </h1>
 <p align="center">
 
-  <a href="https://travis-ci.org/lailaibtc/java-wallet">
-    <img src="https://travis-ci.org/lailaibtc/java-wallet.svg?branch=master">
+  <a href="https://travis-ci.org/galaxyzxcv/java-wallet">
+    <img src="https://travis-ci.org/galaxyzxcv/java-wallet.svg?branch=master">
   </a>
 
-  <a href="https://github.com/lailaibtc/java-wallet/issues">
-    <img src="https://img.shields.io/github/issues/lailaibtc/java-wallet.svg">
+  <a href="https://github.com/galaxyzxcv/java-wallet/issues">
+    <img src="https://img.shields.io/github/issues/galaxyzxcv/java-wallet.svg">
   </a>
 
-  <a href="https://github.com/lailaibtc/java-wallet/pulls">
-    <img src="https://img.shields.io/github/issues-pr/lailaibtc/java-wallet.svg">
+  <a href="https://github.com/galaxyzxcv/java-wallet/pulls">
+    <img src="https://img.shields.io/github/issues-pr/galaxyzxcv/java-wallet.svg">
   </a>
 
-  <a href="https://github.com/lailaibtc/java-wallet/graphs/contributors">
-    <img src="https://img.shields.io/github/contributors/lailaibtc/java-wallet.svg">
+  <a href="https://github.com/galaxyzxcv/java-wallet/graphs/contributors">
+    <img src="https://img.shields.io/github/contributors/galaxyzxcv/java-wallet.svg">
   </a>
 
   <a href="LICENSE">
-    <img src="https://img.shields.io/github/license/lailaibtc/java-wallet.svg">
+    <img src="https://img.shields.io/github/license/galaxyzxcv/java-wallet.svg">
   </a>
 
 </p>
 
-# 联系方式
-- [我的Telegram](https://t.me/pai_tokencore) / @Telegram
+# Contact details
+- [My Telegram](https://t.me/xzadcx) / @Telegram
 
-- en [English](README_en.md)
-- zh_CN [简体中文](README.md)
+# Language
 
-### 区块链java wallet介绍：
-- #### 业务后台是依据该数字货币的功能组件所构建出来的更强大的业务系统，可以随时获取不同公链区块链地址,并支持(BTC,OMNI,ETH,ERC20,TRX,TRC20,BCH,BSV,DOGE,DASH,LTC)的充归提功能
-注：程序员对接时主要对接api接口就行了
-- ###### 代码演示
+- en [English](README.md)
+- zh_CN [Simplified Chinese](README_zh_CN.md)
+
+# Demo URL
+
+-Background management http://34.152.57.199:10001
+
+(please contact me by telegram for account and password)
+
+-Scheduled task management http://34.152.57.199:8081/xxl-job-admin
+
+(please contact me by telegram for account and password)
+
+### Blockchain java wallet introduction:
+- #### The business backend is a more powerful business system constructed based on the functional components of the digital currency, which can obtain different public chain blockchain addresses at any time, and supports (BTC, OMNI, ETH, ERC20, TRX, TRC20) , BCH, BSV, DOGE, DASH, LTC) deposit and withdrawal functions
+Note: When the programmer is docked, it is only necessary to dock the api interface
+- ###### code demo
 ![](https://i.ibb.co/PD2zRPD/We-Chate0ef7be708d49975ed0d411eb4194a47.png)
-- ###### 后台管理演示
+- ###### Background management demo
 ![](https://i.ibb.co/zb8LtyH/test.gif)
-- ###### API接口演示
+- ###### API interface demo
 ![](https://i.ibb.co/MPbh9Gj/test1.gif)
 
-#### 全套系统架构情况：
-- 使用springboot框架
-- 语言为java,kotlin
-- 使用rabbitmq消息队列
-- mysql云数据库
-- xxl-job分布式定时任务框架
+#### Complete system architecture situation:
+- Use springboot framework
+- The language is java, kotlin
+- Use rabbitmq message queue
+- mysql cloud database
+- xxl-job distributed timing task framework
 
-#### 全套系统均由我一个人开发，并且已经在生产环境跑了上亿流水，具有充足的可靠性，可扩展性，实用性，可以放心使用。
+#### The entire system is developed by myself, and has run hundreds of millions of dollars in the production environment. It has sufficient reliability, scalability, and practicality, and can be used with confidence.
 
-### 有问题提交issue
+### Submit an issue if there is a problem
 
-## 特别注意
-任何使用本源码从事商业活动，对别人和自己造成损失的，本人概不负责！
+## pay attention
+Anyone who uses this source code to engage in commercial activities and causes losses to others and yourself, I am not responsible for it!

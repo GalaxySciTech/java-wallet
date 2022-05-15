@@ -1,4 +1,6 @@
-import org.apache.tools.ant.filters.ReplaceTokens
+plugins {
+    id 'com.google.cloud.tools.jib' version '3.1.2'
+}
 
 apply plugin: 'application'
 

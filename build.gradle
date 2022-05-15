@@ -1,3 +1,5 @@
+
+
 allprojects {
 
     ext {
@@ -106,10 +108,11 @@ subprojects {
 //    }
 }
 
-
 buildscript {
+
     ext.kotlinVersion = '1.4.10'
     ext.springBootVersion = '1.5.6.RELEASE'
+
     repositories {
         maven { url 'http://maven.aliyun.com/nexus/content/groups/public/' }
         mavenLocal()
@@ -121,6 +124,3 @@ buildscript {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
     }
 }
-
-
-

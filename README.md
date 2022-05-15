@@ -3,24 +3,24 @@
 </h1>
 <p align="center">
 
-  <a href="https://travis-ci.org/paipaipaipai/java-wallet">
-    <img src="https://travis-ci.org/paipaipaipai/java-wallet.svg?branch=master">
+  <a href="https://travis-ci.org/lailaibtc/java-wallet">
+    <img src="https://travis-ci.org/lailaibtc/java-wallet.svg?branch=master">
   </a>
 
-  <a href="https://github.com/paipaipaipai/java-wallet/issues">
-    <img src="https://img.shields.io/github/issues/paipaipaipai/java-wallet.svg">
+  <a href="https://github.com/lailaibtc/java-wallet/issues">
+    <img src="https://img.shields.io/github/issues/lailaibtc/java-wallet.svg">
   </a>
 
-  <a href="https://github.com/paipaipaipai/java-wallet/pulls">
-    <img src="https://img.shields.io/github/issues-pr/paipaipaipai/java-wallet.svg">
+  <a href="https://github.com/lailaibtc/java-wallet/pulls">
+    <img src="https://img.shields.io/github/issues-pr/lailaibtc/java-wallet.svg">
   </a>
 
-  <a href="https://github.com/paipaipaipai/java-wallet/graphs/contributors">
-    <img src="https://img.shields.io/github/contributors/paipaipaipai/java-wallet.svg">
+  <a href="https://github.com/lailaibtc/java-wallet/graphs/contributors">
+    <img src="https://img.shields.io/github/contributors/lailaibtc/java-wallet.svg">
   </a>
 
   <a href="LICENSE">
-    <img src="https://img.shields.io/github/license/paipaipaipai/java-wallet.svg">
+    <img src="https://img.shields.io/github/license/lailaibtc/java-wallet.svg">
   </a>
 
 </p>

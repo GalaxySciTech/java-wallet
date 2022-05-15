@@ -25,10 +25,6 @@
 
 </p>
 
-# 联系方式
-
-- [我的Telegram](https://t.me/xzadcx) / @Telegram
-
 # 语言选择
 
 - en [English](README.md)

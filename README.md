@@ -25,9 +25,6 @@
 
 </p>
 
-# Contact details
-- [My Telegram](https://t.me/xzadcx) / @Telegram
-
 # Language
 
 - en [English](README.md)

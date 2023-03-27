@@ -9,7 +9,7 @@ docker exec -i mysql5.7 mysql -uroot -p123456 < wallet_db.sql
 mkdir /home && cd /home
 # shellcheck disable=SC2164
 mkdir java-wallet
-git clone https://github.com/lailaibtc/xxl-job-admin
+git clone https://github.com/tradergalax/xxl-job-admin
 # shellcheck disable=SC2164
 cd java-wallet
 mkdir hsm task webapi

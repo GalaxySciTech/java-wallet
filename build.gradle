@@ -7,11 +7,10 @@ allprojects {
         tokenVersion = "3.0.0"
     }
     repositories {
+        mavenLocal()
+        maven {url 'https://maven.aliyun.com/repository/public/'}
         maven { url 'https://jitpack.io' }
         maven { url "https://kotlin.bintray.com/kotlinx" }
-        mavenLocal()
-        mavenCentral()
-        maven { url 'https://repo.spring.io/libs-milestone' }
     }
 
     tasks.withType(JavaCompile) {
@@ -88,7 +87,7 @@ subprojects {
 //            exclude module: "net.minidev"
 //            compile group: 'com.googlecode.json-simple', name: 'json-simple', version: '1.1'
 //        }
-        compile 'com.github.lailaibtc:tokencore:1.2.7'
+        compile 'com.github.TraderGalax:tokencore:1.2.7'
         testCompile "org.springframework.boot:spring-boot-starter-test:$springBootVersion"
 
     }
@@ -114,7 +113,7 @@ buildscript {
     ext.springBootVersion = '1.5.6.RELEASE'
 
     repositories {
-        maven { url 'http://maven.aliyun.com/nexus/content/groups/public/' }
+        maven {url 'https://maven.aliyun.com/repository/public/'}
         mavenLocal()
         mavenCentral()
     }

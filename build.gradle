@@ -57,7 +57,7 @@ subprojects {
         compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
         compile "org.jetbrains.kotlin:kotlin-reflect:$kotlinVersion"
         compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlinVersion"
-        compile "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.1.1"
+        compile "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3"
         compile "org.springframework.boot:spring-boot-starter-web:$springBootVersion"
         compile "org.springframework.boot:spring-boot-starter-cache:$springBootVersion"
         compile "org.springframework.boot:spring-boot-starter-data-jpa:$springBootVersion"

@@ -78,7 +78,7 @@ subprojects {
         compile "org.springframework.boot:spring-boot-starter-amqp:$springBootVersion"
         compile 'com.github.ben-manes.caffeine:caffeine:2.8.5'
         compile 'com.github.sealedtx:bitcoin-cash-converter:1.0'
-        compile 'com.xuxueli:xxl-job-core:2.2.0'
+        compile 'com.xuxueli:xxl-job-core:2.4.0'
         //ALI SDK
 //        compile 'com.aliyun:aliyun-java-sdk-core:4.0.3'
 //        //AWS SDK

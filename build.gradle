@@ -76,7 +76,7 @@ subprojects {
         compile group: 'io.springfox', name: 'springfox-swagger2', version: '2.6.1'
         compile group: 'io.springfox', name: 'springfox-swagger-ui', version: '2.6.1'
         compile "org.springframework.boot:spring-boot-starter-amqp:$springBootVersion"
-        compile 'com.github.ben-manes.caffeine:caffeine:2.8.5'
+        compile 'com.github.ben-manes.caffeine:caffeine:3.1.8'
         compile 'com.github.sealedtx:bitcoin-cash-converter:1.0'
         compile 'com.xuxueli:xxl-job-core:2.4.0'
         //ALI SDK

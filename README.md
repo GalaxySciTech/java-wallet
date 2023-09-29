@@ -3,32 +3,27 @@
 </h1>
 <p align="center">
 
-  <a href="https://travis-ci.org/galaxyzxcv/java-wallet">
-    <img src="https://travis-ci.org/galaxyzxcv/java-wallet.svg?branch=master">
+  <a href="https://travis-ci.org/galaxyscitech/java-wallet">
+    <img src="https://travis-ci.org/galaxyscitech/java-wallet.svg?branch=master">
   </a>
 
-  <a href="https://github.com/galaxyzxcv/java-wallet/issues">
-    <img src="https://img.shields.io/github/issues/galaxyzxcv/java-wallet.svg">
+  <a href="https://github.com/galaxyscitech/java-wallet/issues">
+    <img src="https://img.shields.io/github/issues/galaxyscitech/java-wallet.svg">
   </a>
 
-  <a href="https://github.com/galaxyzxcv/java-wallet/pulls">
-    <img src="https://img.shields.io/github/issues-pr/galaxyzxcv/java-wallet.svg">
+  <a href="https://github.com/galaxyscitech/java-wallet/pulls">
+    <img src="https://img.shields.io/github/issues-pr/galaxyscitech/java-wallet.svg">
   </a>
 
-  <a href="https://github.com/galaxyzxcv/java-wallet/graphs/contributors">
-    <img src="https://img.shields.io/github/contributors/galaxyzxcv/java-wallet.svg">
+  <a href="https://github.com/galaxyscitech/java-wallet/graphs/contributors">
+    <img src="https://img.shields.io/github/contributors/galaxyscitech/java-wallet.svg">
   </a>
 
   <a href="LICENSE">
-    <img src="https://img.shields.io/github/license/galaxyzxcv/java-wallet.svg">
+    <img src="https://img.shields.io/github/license/galaxyscitech/java-wallet.svg">
   </a>
 
 </p>
-
-# Language
-
-- en [English](README.md)
-- zh_CN [Simplified Chinese](README_zh_CN.md)
 
 # Demo URL
 

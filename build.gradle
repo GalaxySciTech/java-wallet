@@ -73,7 +73,7 @@ subprojects {
 //        compile 'com.github.EOSEssentials:eos-java-rpc-wrapper:master'
 
         // API Doc Generator: Swagger
-        compile group: 'io.springfox', name: 'springfox-swagger2', version: '2.6.1'
+        compile group: 'io.springfox', name: 'springfox-swagger2', version: '3.0.0'
         compile group: 'io.springfox', name: 'springfox-swagger-ui', version: '2.6.1'
         compile "org.springframework.boot:spring-boot-starter-amqp:$springBootVersion"
         compile 'com.github.ben-manes.caffeine:caffeine:3.1.8'

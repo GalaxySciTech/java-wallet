@@ -69,7 +69,7 @@ subprojects {
         compile 'commons-beanutils:commons-beanutils:1.9.4'
 //        compile "org.springframework.boot:spring-boot-starter-data-redis:$springBootVersion"
         compile 'org.web3j:core:4.2.0'
-        compile 'wf.bitcoin:bitcoin-rpc-client:1.1.0'
+        compile 'wf.bitcoin:bitcoin-rpc-client:1.2.4'
 //        compile 'com.github.EOSEssentials:eos-java-rpc-wrapper:master'
 
         // API Doc Generator: Swagger

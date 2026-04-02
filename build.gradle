@@ -67,7 +67,7 @@ subprojects {
         implementation 'com.github.ben-manes.caffeine:caffeine:3.1.8'
         implementation 'com.github.sealedtx:bitcoin-cash-converter:1.0'
         implementation 'com.xuxueli:xxl-job-core:2.4.0'
-        implementation 'com.github.TraderGalax:tokencore:1.2.7'
+        implementation 'com.github.TraderGalax:tokencore:1.3.0'
 
         implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.3.0'
 

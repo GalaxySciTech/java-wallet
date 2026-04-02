@@ -1,20 +1,41 @@
+# Gradle
 .gradle/
 build/
+!gradle/wrapper/gradle-wrapper.jar
+
+# IDE
 .settings/
 .project
 .classpath
-*.class
-.idea
+.idea/
 *.iml
-.gradle
-/local.properties
-.DS_Store
-/build
-/*/out/
-out
-/wallets
-/task-logs
+*.iws
+*.ipr
 
-shell
-nginx
-docker
+# Compiled
+*.class
+out/
+/*/out/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Local config
+/local.properties
+*.env
+!.env.example
+
+# Application data
+/wallets/
+/task-logs/
+/logs/
+
+# Docker local
+shell/
+nginx/
+
+# Secrets - never commit
+*.p12
+*.jks
+*.keystore

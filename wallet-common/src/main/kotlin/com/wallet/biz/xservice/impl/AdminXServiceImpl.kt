@@ -8,9 +8,6 @@ import org.apache.commons.codec.digest.Md5Crypt
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 
-/** 
- * Created by pie on 2020/12/7 13: 06. 
- */
 @Service
 class AdminXServiceImpl : AdminXService {
 
@@ -25,7 +22,6 @@ class AdminXServiceImpl : AdminXService {
     override fun login(name: String, password: String): String {
         val user = userService.getByName(name) ?: throw BizException(-1, "用户名密码错误")
         val enPass = Md5Crypt.md5Crypt(password.toByteArray(), user.salt, "")
-
         if (user.password != enPass) throw BizException(-1, "用户名密码错误")
         return user.accessToken
     }
@@ -50,30 +46,30 @@ class AdminXServiceImpl : AdminXService {
         return blockHeightService.findAll()
     }
 
-
     override fun getTokenList(): List<Token> {
         return walletTokenService.findAll()
     }
 
     override fun getDashboard(): Map<String, Any> {
-        val totalAddress = addressService.findAll().size
-        val deL = depositService.findAll()
-        val totalDeposit = deL.size
-        val totalWithdraw = withdrawService.findAll().size
-        val totalTx = totalDeposit + totalWithdraw
-        val pieGroup = deL.groupBy { it.chainType }
-        val pieLabels = pieGroup.keys
-        val pieData = pieGroup.values.map { it.size }
-        val pieChart = mapOf("labels" to pieLabels, "data" to pieData)
-        val areaGroup=deL.groupBy { "${it.createdAt.year}-${it.createdAt.month}" }
-        val areaLabels=areaGroup.keys
-        val areaData=areaGroup.values.map { it.size }
-        val areaChart = mapOf("labels" to areaLabels, "data" to areaData)
+        val addressCount = addressService.findAll().size
+        val deposits = depositService.findAll()
+        val depositCount = deposits.size
+        val withdrawCount = withdrawService.findAll().size
+        val totalTx = depositCount + withdrawCount
+
+        val pieGroup = deposits.groupBy { it.chainType ?: "UNKNOWN" }
+        val pieChart = mapOf("labels" to pieGroup.keys.toList(), "data" to pieGroup.values.map { it.size })
+
+        val areaGroup = deposits.groupBy {
+            val date = it.createdAt
+            if (date != null) "${date.year + 1900}-${date.month + 1}" else "unknown"
+        }
+        val areaChart = mapOf("labels" to areaGroup.keys.toList(), "data" to areaGroup.values.map { it.size })
 
         return mapOf(
-            "totalAddress" to totalAddress,
-            "totalDeposit" to totalDeposit,
-            "totalWithdraw" to totalWithdraw,
+            "totalAddress" to addressCount,
+            "totalDeposit" to depositCount,
+            "totalWithdraw" to withdrawCount,
             "totalTx" to totalTx,
             "pieChart" to pieChart,
             "areaChart" to areaChart
@@ -81,18 +77,18 @@ class AdminXServiceImpl : AdminXService {
     }
 
     override fun addAddrAdmin(type: Int, address: String, chainType: String) {
-        val addrAdmin= AddressAdmin()
-        if(type!=200){
-            val find= Address()
-            find.address=address
-            val wAddr=addressService.findByBean(find).firstOrNull()?:throw BizException(-1,"添加热钱包或者gas钱包必须是在本钱包有生成过的地址")
-            addrAdmin.walletCode=wAddr.walletCode
+        val addrAdmin = AddressAdmin()
+        if (type != 200) {
+            val find = Address()
+            find.address = address
+            val wAddr = addressService.findByBean(find).firstOrNull()
+                ?: throw BizException(-1, "添加热钱包或者gas钱包必须是在本钱包有生成过的地址")
+            addrAdmin.walletCode = wAddr.walletCode
             addressService.delete(wAddr.id)
         }
-        addrAdmin.address=address
-        addrAdmin.addressType=type
-        addrAdmin.chainType=chainType
-
+        addrAdmin.address = address
+        addrAdmin.addressType = type
+        addrAdmin.chainType = chainType
         addressAdminService.save(addrAdmin)
     }
 
@@ -136,32 +132,14 @@ class AdminXServiceImpl : AdminXService {
         whiteService.del(id)
     }
 
-    @Autowired
-    lateinit var addressAdminService: AddressAdminService
-    @Autowired
-    lateinit var depositService: DepositService
-    @Autowired
-    lateinit var withdrawService: WithdrawService
-    @Autowired
-    lateinit var blockHeightService: BlockHeightService
-    @Autowired
-    lateinit var walletTokenService: TokenService
-    @Autowired
-    lateinit var addressService: AddressService
-    @Autowired
-    lateinit var configService: ConfigService
-    @Autowired
-    lateinit var userService: UserService
-    @Autowired
-    lateinit var cacheService: com.wallet.biz.cache.CacheService
-    @Autowired
-    lateinit var whiteService: WhiteService
+    @Autowired lateinit var addressAdminService: AddressAdminService
+    @Autowired lateinit var depositService: DepositService
+    @Autowired lateinit var withdrawService: WithdrawService
+    @Autowired lateinit var blockHeightService: BlockHeightService
+    @Autowired lateinit var walletTokenService: TokenService
+    @Autowired lateinit var addressService: AddressService
+    @Autowired lateinit var configService: ConfigService
+    @Autowired lateinit var userService: UserService
+    @Autowired lateinit var cacheService: com.wallet.biz.cache.CacheService
+    @Autowired lateinit var whiteService: WhiteService
 }
-
-fun main() {
-
-    val a=Md5Crypt.md5Crypt("v423hgv".toByteArray(), "32134", "")
-
-    print(a)
-}
-

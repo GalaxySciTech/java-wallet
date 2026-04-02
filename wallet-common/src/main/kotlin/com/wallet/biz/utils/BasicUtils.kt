@@ -3,50 +3,40 @@ package com.wallet.biz.utils
 import org.apache.commons.lang3.StringUtils
 import org.bitcoinj.core.Base58
 import org.consenlabs.tokencore.foundation.utils.NumericUtil
+import org.slf4j.LoggerFactory
 import org.springframework.beans.BeanUtils
-import org.web3j.crypto.Hash
-import java.util.HashSet
-
-import org.springframework.beans.BeanWrapperImpl
-
 import org.springframework.beans.BeanWrapper
+import org.springframework.beans.BeanWrapperImpl
+import org.web3j.crypto.Hash
 
-
-
-
-/** 
- * Created by pie on 2020/9/7 19: 24. 
- */
 class BasicUtils {
-    companion object{
+    companion object {
+        private val logger = LoggerFactory.getLogger(BasicUtils::class.java)
 
-        fun copyPropertiesIgnoreNull(source:Any,target:Any){
-            BeanUtils.copyProperties(source,target,*getNullPropertyNames(source))
+        fun copyPropertiesIgnoreNull(source: Any, target: Any) {
+            BeanUtils.copyProperties(source, target, *getNullPropertyNames(source))
         }
 
         fun getNullPropertyNames(source: Any): Array<String> {
             val src: BeanWrapper = BeanWrapperImpl(source)
             val pds = src.propertyDescriptors
-            val emptyNames= HashSet<Any?>()
+            val emptyNames = HashSet<String>()
             for (pd in pds) {
-                //check if value of this property is null then add it to the collection
                 val srcValue = src.getPropertyValue(pd.name)
                 if (srcValue == null) {
                     emptyNames.add(pd.name)
                 }
             }
-            val result = arrayOfNulls<String>(emptyNames.size)
-            return emptyNames.toArray(result)
+            return emptyNames.toTypedArray()
         }
 
-
-        fun base58CheckToHexString(input: String):String{
-            val byteArray=decode58Check(input)
+        fun base58CheckToHexString(input: String): String {
+            val byteArray = decode58Check(input)
             return NumericUtil.bytesToHex(byteArray)
         }
 
-        fun hexToBase58(input: String):String{
-            val byteArray=NumericUtil.hexToBytes(input)
+        fun hexToBase58(input: String): String {
+            val byteArray = NumericUtil.hexToBytes(input)
             return encode58Check(byteArray)
         }
 
@@ -68,7 +58,10 @@ class BasicUtils {
             System.arraycopy(decodeCheck, 0, decodeData, 0, decodeData.size)
             val hash0: ByteArray = Hash.sha256(decodeData)
             val hash1: ByteArray = Hash.sha256(hash0)
-            return if (hash1[0] == decodeCheck[decodeData.size] && hash1[1] == decodeCheck[decodeData.size + 1] && hash1[2] == decodeCheck[decodeData.size + 2] && hash1[3] == decodeCheck[decodeData.size + 3]
+            return if (hash1[0] == decodeCheck[decodeData.size]
+                && hash1[1] == decodeCheck[decodeData.size + 1]
+                && hash1[2] == decodeCheck[decodeData.size + 2]
+                && hash1[3] == decodeCheck[decodeData.size + 3]
             ) {
                 decodeData
             } else null
@@ -76,11 +69,10 @@ class BasicUtils {
 
         fun decodeFromBase58Check(addressBase58: String): ByteArray? {
             if (StringUtils.isEmpty(addressBase58)) {
-                println("Warning: Address is empty !!")
+                logger.warn("Address is empty")
                 return null
             }
-            return  decode58Check(addressBase58)
+            return decode58Check(addressBase58)
         }
     }
-
 }

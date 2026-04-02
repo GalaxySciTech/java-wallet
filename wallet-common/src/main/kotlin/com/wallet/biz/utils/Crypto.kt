@@ -1,32 +1,64 @@
 package com.wallet.biz.utils
 
+import java.security.SecureRandom
 import java.util.Base64
 import javax.crypto.Cipher
 import javax.crypto.spec.IvParameterSpec
 import javax.crypto.spec.SecretKeySpec
 
-object Crypto{
-    @JvmStatic fun aesEncrypt(v:String, secretKey:String) = AES256.encrypt(v, secretKey)
-    @JvmStatic fun aesDecrypt(v:String, secretKey:String) = AES256.decrypt(v, secretKey)
+object Crypto {
+    @JvmStatic
+    fun aesEncrypt(v: String, secretKey: String) = AES256.encrypt(v, secretKey)
+
+    @JvmStatic
+    fun aesDecrypt(v: String, secretKey: String) = AES256.decrypt(v, secretKey)
 }
 
-private object AES256{
-    private val encorder = Base64.getEncoder()
-    private val decorder = Base64.getDecoder()
-    private fun cipher(opmode:Int, secretKey:String):Cipher{
-        if(secretKey.length != 32) throw RuntimeException("SecretKey length is not 32 chars")
-        val c = Cipher.getInstance("AES/CBC/PKCS5Padding")
-        val sk = SecretKeySpec(secretKey.toByteArray(Charsets.UTF_8), "AES")
+private object AES256 {
+    private val encoder = Base64.getEncoder()
+    private val decoder = Base64.getDecoder()
+    private val secureRandom = SecureRandom()
+
+    private fun getKeySpec(secretKey: String): SecretKeySpec {
+        if (secretKey.length != 32) throw RuntimeException("SecretKey length is not 32 chars")
+        return SecretKeySpec(secretKey.toByteArray(Charsets.UTF_8), "AES")
+    }
+
+    fun encrypt(str: String, secretKey: String): String {
+        val iv = ByteArray(16)
+        secureRandom.nextBytes(iv)
+        val ivSpec = IvParameterSpec(iv)
+        val cipher = Cipher.getInstance("AES/CBC/PKCS5Padding")
+        cipher.init(Cipher.ENCRYPT_MODE, getKeySpec(secretKey), ivSpec)
+        val encrypted = cipher.doFinal(str.toByteArray(Charsets.UTF_8))
+        val combined = ByteArray(iv.size + encrypted.size)
+        System.arraycopy(iv, 0, combined, 0, iv.size)
+        System.arraycopy(encrypted, 0, combined, iv.size, encrypted.size)
+        return String(encoder.encode(combined))
+    }
+
+    fun decrypt(str: String, secretKey: String): String {
+        val combined = decoder.decode(str.toByteArray(Charsets.UTF_8))
+        if (combined.size < 16) {
+            return decryptLegacy(str, secretKey)
+        }
+        return try {
+            val iv = combined.copyOfRange(0, 16)
+            val encrypted = combined.copyOfRange(16, combined.size)
+            val ivSpec = IvParameterSpec(iv)
+            val cipher = Cipher.getInstance("AES/CBC/PKCS5Padding")
+            cipher.init(Cipher.DECRYPT_MODE, getKeySpec(secretKey), ivSpec)
+            String(cipher.doFinal(encrypted))
+        } catch (e: Exception) {
+            decryptLegacy(str, secretKey)
+        }
+    }
+
+    private fun decryptLegacy(str: String, secretKey: String): String {
+        val byteStr = decoder.decode(str.toByteArray(Charsets.UTF_8))
         val iv = IvParameterSpec(secretKey.substring(0, 16).toByteArray(Charsets.UTF_8))
-        c.init(opmode, sk, iv)
-        return c
-    }
-    fun encrypt(str:String, secretKey:String):String{
-        val encrypted = cipher(Cipher.ENCRYPT_MODE, secretKey).doFinal(str.toByteArray(Charsets.UTF_8))
-        return String(encorder.encode(encrypted))
-    }
-    fun decrypt(str:String, secretKey:String):String{
-        val byteStr = decorder.decode(str.toByteArray(Charsets.UTF_8))
-        return String(cipher(Cipher.DECRYPT_MODE, secretKey).doFinal(byteStr))
+        val cipher = Cipher.getInstance("AES/CBC/PKCS5Padding")
+        cipher.init(Cipher.DECRYPT_MODE, getKeySpec(secretKey), iv)
+        return String(cipher.doFinal(byteStr))
     }
 }

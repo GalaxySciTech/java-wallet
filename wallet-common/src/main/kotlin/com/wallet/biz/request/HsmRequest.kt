@@ -10,6 +10,7 @@ import com.wallet.biz.domain.vo.AddressVo
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.consenlabs.tokencore.wallet.transaction.BitcoinTransaction
 import org.consenlabs.tokencore.wallet.transaction.TxSignResult
+import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.core.ParameterizedTypeReference
 import org.springframework.http.HttpEntity
@@ -26,7 +27,9 @@ import java.util.*
 @Component
 class HsmRequest {
 
-    private fun getHsmUrl():String {
+    private val logger = LoggerFactory.getLogger(HsmRequest::class.java)
+
+    private fun getHsmUrl(): String {
         return cacheService.getSysConfig(SysConfigKey.HSM_URL)
     }
 
@@ -183,18 +186,20 @@ class HsmRequest {
     }
 
     private fun <T> exchange(url: String, method: HttpMethod, body: Any?, responseClass: Class<T>): T {
-        val response =try{
-             restTemplate.exchange(
+        val response = try {
+            restTemplate.exchange(
                 url,
                 method,
                 packRequest(body),
                 object : ParameterizedTypeReference<TokenResponse<T>>() {}
             ).body
-        }catch (e:Exception){
+        } catch (e: Exception) {
+            logger.error("HSM connection failed for $url: ${e.message}", e)
             throw BizException(ErrorCode.HSM_CONNECT_FAILURE)
         }
+        if (response == null) throw BizException(ErrorCode.HSM_CONNECT_FAILURE)
         if (response.code != 200) throw BizException(response.code, response.msg)
-        return obj.readValue(obj.writeValueAsString(response.data?:""), responseClass)
+        return obj.readValue(obj.writeValueAsString(response.data ?: ""), responseClass)
     }
 
 

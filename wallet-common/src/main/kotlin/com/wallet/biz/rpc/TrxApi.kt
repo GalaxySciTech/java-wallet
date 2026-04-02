@@ -6,21 +6,14 @@ import com.wallet.biz.utils.BasicUtils
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.consenlabs.tokencore.foundation.utils.NumericUtil
+import org.slf4j.LoggerFactory
 import org.springframework.web.client.RestTemplate
-import org.tron.trident.core.ApiWrapper
-import java.lang.Exception
 
-
-/** 
- * Created by pie on 2020/9/7 18: 01. 
- */
 class TrxApi(val url: String, val restTemplate: RestTemplate) {
 
-    val tronClient=ApiWrapper.ofMainnet("")
+    private val logger = LoggerFactory.getLogger(TrxApi::class.java)
 
     val callAddress = "TM1zzNDZD2DPASbKcgdVoTYhfmYgtfwx9R"
-
-    val sendTxUrl="http://13.127.47.162:8090"
 
     fun easyTransferByPrivate(
         privateKey: String,
@@ -28,9 +21,8 @@ class TrxApi(val url: String, val restTemplate: RestTemplate) {
         toAddress: String,
         amount: Long
     ): JsonNode {
-
         val res = createTransaction(toAddress, fromAddress, amount)
-        val signedTransaction = getTransactionSign(res, privateKey)
+        val signedTransaction = signTransactionLocally(res, privateKey)
         return broadcastTransaction(signedTransaction)
     }
 
@@ -43,7 +35,7 @@ class TrxApi(val url: String, val restTemplate: RestTemplate) {
         feeLimit: Long
     ): JsonNode {
         val res = contractTransfer(contractAddress, fromAddress, toAddress, amount, feeLimit)
-        val signedTransaction = getTransactionSign(res["transaction"], privateKey)
+        val signedTransaction = signTransactionLocally(res["transaction"], privateKey)
         return broadcastTransaction(signedTransaction)
     }
 
@@ -51,13 +43,54 @@ class TrxApi(val url: String, val restTemplate: RestTemplate) {
         return post("$url/wallet/broadcasttransaction", signedTransaction)
     }
 
-    fun getTransactionSign(transaction: JsonNode, privateKey: String): JsonNode {
-        val json=obj.writeValueAsString(transaction)
-        val map = hashMapOf(
-            "transaction" to json,
-            "privateKey" to privateKey
-        )
-        return post("$sendTxUrl/wallet/gettransactionsign", map)
+    /**
+     * Local offline signing using ECDSA secp256k1 - private key never leaves the process.
+     * This replaces the old approach of sending private keys to a remote HTTP endpoint.
+     */
+    private fun signTransactionLocally(transaction: JsonNode, privateKey: String): JsonNode {
+        val txId = transaction["txID"]?.asText()
+            ?: throw BizException(-1, "Transaction has no txID field")
+        val rawDataHex = transaction["raw_data_hex"]?.asText()
+            ?: throw BizException(-1, "Transaction has no raw_data_hex field")
+
+        val txIdBytes = NumericUtil.hexToBytes(txId)
+        val privKeyBytes = NumericUtil.hexToBytes(privateKey)
+
+        val ecKey = org.bitcoinj.core.ECKey.fromPrivate(privKeyBytes, false)
+        val signature = ecKey.sign(org.bitcoinj.core.Sha256Hash.wrap(txIdBytes))
+
+        val sigBytes = ByteArray(65)
+        val rBytes = signature.r.toByteArray()
+        val sBytes = signature.s.toByteArray()
+        System.arraycopy(rBytes, Math.max(0, rBytes.size - 32), sigBytes, Math.max(0, 32 - rBytes.size), Math.min(32, rBytes.size))
+        System.arraycopy(sBytes, Math.max(0, sBytes.size - 32), sigBytes, Math.max(0, 64 - sBytes.size), Math.min(32, sBytes.size))
+        sigBytes[64] = ecKey.findRecoveryId(org.bitcoinj.core.Sha256Hash.wrap(txIdBytes), signature).toByte()
+
+        val signatureHex = NumericUtil.bytesToHex(sigBytes)
+
+        val signedTx = obj.createObjectNode()
+        signedTx.set<JsonNode>("raw_data", transaction["raw_data"])
+        signedTx.put("raw_data_hex", rawDataHex)
+        signedTx.put("txID", txId)
+        val sigArray = signedTx.putArray("signature")
+        sigArray.add(signatureHex)
+
+        return signedTx
+    }
+
+    fun easyTransferByPrivate(privateKey: String, toAddress: String, amount: Long): JsonNode {
+        val fromAddress = getAddressFromPrivateKey(privateKey)
+        return easyTransferByPrivate(privateKey, fromAddress, toAddress, amount)
+    }
+
+    private fun getAddressFromPrivateKey(privateKey: String): String {
+        val ecKey = org.bitcoinj.core.ECKey.fromPrivate(NumericUtil.hexToBytes(privateKey), false)
+        val pubKeyBytes = ecKey.pubKeyPoint.getEncoded(false)
+        val addressBytes = ByteArray(21)
+        addressBytes[0] = 0x41
+        val hash = org.web3j.crypto.Hash.sha3(pubKeyBytes.copyOfRange(1, pubKeyBytes.size))
+        System.arraycopy(hash, 12, addressBytes, 1, 20)
+        return BasicUtils.encode58Check(addressBytes)
     }
 
     fun accounts(address: String): JsonNode {
@@ -98,30 +131,6 @@ class TrxApi(val url: String, val restTemplate: RestTemplate) {
     fun getNowBlock(): JsonNode {
         return get("$url/wallet/getnowblock")
     }
-
-    fun easyTransferByPrivate(privateKey: String, toAddress: String, amount: Long): JsonNode {
-        val map = hashMapOf(
-            "privateKey" to privateKey,
-            "toAddress" to toAddress,
-            "amount" to amount,
-            "visible" to true
-        )
-        val node = post("$sendTxUrl/wallet/easytransferbyprivate", map)
-        if (node["result"]["code"] != null) throw BizException(-1, node["result"]["message"].textValue())
-        return node
-    }
-
-    fun easyTransferAssetByPrivate(privateKey: String, toAddress: String, assetId: String, amount: Long): JsonNode {
-        val map = hashMapOf(
-            "privateKey" to privateKey,
-            "toAddress" to toAddress,
-            "assetId" to assetId,
-            "amount" to amount,
-            "visible" to true
-        )
-        return post("$sendTxUrl/wallet/easytransferassetbyprivate", map)
-    }
-
 
     fun createTransaction(toAddress: String, ownerAddress: String, amount: Long): JsonNode {
         val map =
@@ -199,17 +208,16 @@ class TrxApi(val url: String, val restTemplate: RestTemplate) {
     }
 
     private fun post(url: String, body: Any): JsonNode {
-        return restTemplate.postForObject(url, obj.writeValueAsString(body), JsonNode::class.java)
+        return restTemplate.postForObject(url, obj.writeValueAsString(body), JsonNode::class.java)!!
     }
 
     private fun get(url: String): JsonNode {
-        return restTemplate.getForObject(url, JsonNode::class.java)
+        return restTemplate.getForObject(url, JsonNode::class.java)!!
     }
 
     fun getTransactionInfo(txid: String): JsonNode {
         return get("https://apilist.tronscan.org/api/transaction-info?hash=$txid")
     }
-
 
     private val obj = ObjectMapper()
 }

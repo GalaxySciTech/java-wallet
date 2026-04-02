@@ -246,7 +246,9 @@ class HsmXServiceImpl : HsmXService {
     }
 
     companion object {
-        var identity = Identity.currentIdentity!!
+        val identity: Identity
+            get() = Identity.currentIdentity
+                ?: throw IllegalStateException("Identity not initialized. Ensure ScanKeyStoreConfig has run.")
     }
 
     @Autowired

@@ -20,15 +20,17 @@ import org.web3j.protocol.core.DefaultBlockParameterNumber
 import org.web3j.protocol.core.methods.response.EthBlock
 import wf.bitcoin.javabitcoindrpcclient.BitcoinJSONRPCClient
 import java.math.BigDecimal
+import org.slf4j.LoggerFactory
 import java.util.*
 import java.util.concurrent.Executors
-import javax.annotation.PostConstruct
 
 /** 
  * Created by pie on 2019-04-12 14: 03. 
  */
 @Service
 class SynServiceImpl : SynService {
+
+    private val logger = LoggerFactory.getLogger(SynServiceImpl::class.java)
 
     override fun synOMNI() {
 
@@ -79,10 +81,9 @@ class SynServiceImpl : SynService {
                         val addressInDb = walletXService.checkAddressInDb(map, tx.referenceaddress)
                         if (addressInDb) {
 
-                            walletAddressTransactionService.getByHash(tx.txid!!)?.let { tx ->
-
-                                tx.confirmations = tx.confirmations!!.toLong()
-                                walletAddressTransactionService.save(tx)
+                            walletAddressTransactionService.getByHash(tx.txid!!)?.let { existingDeposit ->
+                                existingDeposit.confirmations = tx.confirmations!!.toLong()
+                                walletAddressTransactionService.save(existingDeposit)
                                 return@forEach
                             }
                             val transaction = Deposit()
@@ -148,11 +149,9 @@ class SynServiceImpl : SynService {
                 val contractMap = walletTokenService.getByBean(walletToken).associateBy { it.tokenAddress }
                 walletHeight.height = scanHeight
                 if (map.isEmpty()) {
-
                     walletBlockHeightService.save(walletHeight)
-                    return
+                    continue
                 }
-
 
                 val ethBlock = ethRpc.ethGetBlockByNumber(
                     DefaultBlockParameterNumber(scanHeight), true
@@ -420,22 +419,27 @@ class SynServiceImpl : SynService {
     override fun synImportAddress() {
         val executor = Executors.newFixedThreadPool(10)
         val list = walletWaitImportService.findAll()
-        list.forEach {
-            executor.execute {
-                try {
-                    when (it.chainType) {
-                        ChainType.BITCOIN -> importAddress(rpcClient.omniRpc(), it.address, false)
-                        ChainType.LITECOIN -> importAddress(rpcClient.ltcRpc(), it.address, false)
-                        ChainType.BITCOINSV -> importAddress(rpcClient.bsvRpc(), it.address, false)
-                        ChainType.DOGECOIN -> importAddress(rpcClient.dogeRpc(), it.address, false)
-                        ChainType.BITCOINCASH -> importAddress(rpcClient.bchRpc(), it.address, false)
-                        ChainType.DASH -> importAddress(rpcClient.dashRpc(), it.address, false)
+        try {
+            list.forEach {
+                executor.execute {
+                    try {
+                        when (it.chainType) {
+                            ChainType.BITCOIN -> importAddress(rpcClient.omniRpc(), it.address, false)
+                            ChainType.LITECOIN -> importAddress(rpcClient.ltcRpc(), it.address, false)
+                            ChainType.BITCOINSV -> importAddress(rpcClient.bsvRpc(), it.address, false)
+                            ChainType.DOGECOIN -> importAddress(rpcClient.dogeRpc(), it.address, false)
+                            ChainType.BITCOINCASH -> importAddress(rpcClient.bchRpc(), it.address, false)
+                            ChainType.DASH -> importAddress(rpcClient.dashRpc(), it.address, false)
+                        }
+                        walletWaitImportService.deleteById(it.id)
+                    } catch (e: Exception) {
+                        logger.error("Failed to import address ${it.address} for ${it.chainType}: ${e.message}")
                     }
-                    walletWaitImportService.deleteById(it.id)
-                } catch (e: Exception) {
-
                 }
             }
+        } finally {
+            executor.shutdown()
+            executor.awaitTermination(5, java.util.concurrent.TimeUnit.MINUTES)
         }
     }
 

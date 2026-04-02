@@ -1,12 +1,12 @@
 package com.wallet.entity.domain;
 
-import javax.persistence.Entity;
-import javax.annotation.Generated;
-import javax.persistence.GeneratedValue;
+import jakarta.persistence.Entity;
+import jakarta.annotation.Generated;
+import jakarta.persistence.GeneratedValue;
 import org.hibernate.annotations.DynamicUpdate;
 import com.querydsl.sql.Column;
 import org.hibernate.annotations.DynamicInsert;
-import javax.persistence.Id;
+import jakarta.persistence.Id;
 import java.io.Serializable;
 
 /**
@@ -31,7 +31,7 @@ public class Address implements Serializable {
 
     @Column("id")
     @Id
-    @GeneratedValue(strategy=javax.persistence.GenerationType.IDENTITY)
+    @GeneratedValue(strategy=jakarta.persistence.GenerationType.IDENTITY)
     private Long id;
 
     @Column("memo")

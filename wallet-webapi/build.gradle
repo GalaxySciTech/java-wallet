@@ -4,9 +4,22 @@ plugins {
 
 apply plugin: 'application'
 
-mainClassName="com.wallet.WebApiApplicationKt"
+mainClassName = "com.wallet.WebApiApplicationKt"
+
 dependencies {
-    compile project(":wallet-common")
+    implementation project(":wallet-common")
 }
 
-
+jib {
+    from {
+        image = 'eclipse-temurin:17-jre-alpine'
+    }
+    to {
+        image = "wallet-webapi:${project.version}"
+    }
+    container {
+        mainClass = 'com.wallet.WebApiApplicationKt'
+        ports = ['10001']
+        jvmFlags = ['-Xms256m', '-Xmx512m', '-Djava.security.egd=file:/dev/./urandom']
+    }
+}

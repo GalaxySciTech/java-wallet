@@ -4,8 +4,22 @@ plugins {
 
 apply plugin: 'application'
 
-dependencies {
-    compile project(":wallet-common")
+mainClassName = "com.wallet.TaskApplicationKt"
 
+dependencies {
+    implementation project(":wallet-common")
 }
 
+jib {
+    from {
+        image = 'eclipse-temurin:17-jre-alpine'
+    }
+    to {
+        image = "wallet-task:${project.version}"
+    }
+    container {
+        mainClass = 'com.wallet.TaskApplicationKt'
+        ports = ['10033']
+        jvmFlags = ['-Xms256m', '-Xmx512m', '-Djava.security.egd=file:/dev/./urandom']
+    }
+}

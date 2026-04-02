@@ -1,7 +1,6 @@
-bootRepackage.enabled=false
-
+bootJar.enabled = false
+jar.enabled = true
 
 dependencies {
-   compile project(":wallet-entity")
+    implementation project(":wallet-entity")
 }
-

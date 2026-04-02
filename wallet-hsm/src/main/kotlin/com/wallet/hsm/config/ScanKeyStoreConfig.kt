@@ -12,7 +12,7 @@ import org.springframework.context.annotation.Configuration
 import java.io.File
 import java.nio.file.Files
 import java.nio.file.Paths
-import javax.annotation.PostConstruct
+import jakarta.annotation.PostConstruct
 
 /**
  * Created by pie on 2019/2/15 15: 36.

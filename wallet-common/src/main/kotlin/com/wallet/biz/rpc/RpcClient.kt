@@ -1,39 +1,46 @@
 package com.wallet.biz.rpc
 
 import com.wallet.biz.dict.SysConfigKey
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.stereotype.Component
 import com.wallet.biz.rpc.BitcoinFork.*
 import com.fasterxml.jackson.databind.JsonNode
-import com.wallet.biz.service.ConfigService
+import org.slf4j.LoggerFactory
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.stereotype.Component
 import org.springframework.web.client.RestTemplate
 import wf.bitcoin.javabitcoindrpcclient.BitcoinJSONRPCClient
 import java.math.BigInteger
 
-/** 
- * Created by pie on 2019-04-14 10: 32. 
- */
 @Component
 class RpcClient {
 
-    var DEFAULT_GAS_PRICE = 90
+    private val logger = LoggerFactory.getLogger(RpcClient::class.java)
 
-    var DEFAULT_SAT_PER_BYTE = 35L
+    @Volatile
+    private var lastGasPrice = 90
+
+    @Volatile
+    private var lastSatPerByte = 35L
 
     fun getGasPrice(): Int {
         return try {
-            val rpc=ethRpc()
+            val rpc = ethRpc()
             val gasPrice = rpc.ethGasPrice().send().gasPrice.divide(BigInteger.TEN.pow(9)).toInt()
+            lastGasPrice = gasPrice
             gasPrice
         } catch (e: Exception) {
-            val gasLevel = cacheService.getSysConfig(SysConfigKey.ETH_GAS_LEVEL)
-            val gasProp = cacheService.getSysConfig(SysConfigKey.GAS_PROP).toBigDecimal()
-
-            val node =
-                restTemplate.getForObject("https://ethgasstation.info/json/ethgasAPI.json", JsonNode::class.java)
-            val gasPrice = (node[gasLevel].decimalValue() * gasProp).toInt() / 10
-            DEFAULT_GAS_PRICE = gasPrice
-            gasPrice
+            logger.warn("Failed to get gas price from node, falling back to external API: ${e.message}")
+            try {
+                val gasLevel = cacheService.getSysConfig(SysConfigKey.ETH_GAS_LEVEL)
+                val gasProp = cacheService.getSysConfig(SysConfigKey.GAS_PROP).toBigDecimal()
+                val node =
+                    restTemplate.getForObject("https://ethgasstation.info/json/ethgasAPI.json", JsonNode::class.java)
+                val gasPrice = (node!![gasLevel].decimalValue() * gasProp).toInt() / 10
+                lastGasPrice = gasPrice
+                gasPrice
+            } catch (e2: Exception) {
+                logger.warn("Failed to get gas price from external API, using cached value: $lastGasPrice")
+                lastGasPrice
+            }
         }
     }
 
@@ -42,14 +49,15 @@ class RpcClient {
             val gasLevel = cacheService.getSysConfig(SysConfigKey.BTC_GAS_LEVEL)
             val gasProp = cacheService.getSysConfig(SysConfigKey.GAS_PROP).toBigDecimal()
             val node = restTemplate.getForObject(
-                    "https://bitcoinfees.earn.com/api/v1/fees/recommended",
-                    JsonNode::class.java
+                "https://bitcoinfees.earn.com/api/v1/fees/recommended",
+                JsonNode::class.java
             )
-            val satPetByte = (node[gasLevel].decimalValue() * gasProp).toLong()
-            DEFAULT_SAT_PER_BYTE = satPetByte
-            satPetByte
+            val satPerByte = (node!![gasLevel].decimalValue() * gasProp).toLong()
+            lastSatPerByte = satPerByte
+            satPerByte
         } catch (e: Exception) {
-            DEFAULT_SAT_PER_BYTE
+            logger.warn("Failed to get BTC fee estimate, using cached value: $lastSatPerByte")
+            lastSatPerByte
         }
     }
 
@@ -90,29 +98,21 @@ class RpcClient {
 
     private fun getBTCOrForkRpcUrl(key: SysConfigKey): String {
         val url = cacheService.getSysConfig(key)
-        val rpc = BitcoinJSONRPCClient(url)
-        return try {
-            rpc.blockChainInfo
-            url
-        } catch (e: Exception) {
-            "http://127.0.0.1:8332"
+        if (url.isBlank()) {
+            logger.error("RPC URL not configured for $key")
+            throw IllegalStateException("RPC URL not configured for $key")
         }
+        return url
     }
 
     private fun getETHRpcUrl(): String {
         val url = cacheService.getSysConfig(SysConfigKey.ETH_RPC_URL)
-        val rpc=EthRpc(url)
-        return try {
-            rpc.ethBlockNumber()
-            url
-        } catch (e: Exception) {
-            return "http://127.0.0.1:8545"
+        if (url.isBlank()) {
+            logger.error("ETH RPC URL not configured")
+            throw IllegalStateException("ETH RPC URL not configured")
         }
+        return url
     }
-
-//    fun eosRpc(): EosApiRestClient {
-//        return EosApiClientFactory.newInstance(SysConfigKey.DOGE_RPC_URL.defaultValue).newRestClient()
-//    }
 
     fun trxApi(): TrxApi {
         val url = cacheService.getSysConfig(SysConfigKey.TRX_API_URL)
@@ -123,9 +123,5 @@ class RpcClient {
     lateinit var cacheService: com.wallet.biz.cache.CacheService
 
     @Autowired
-    lateinit var configService: ConfigService
-
-    @Autowired
     lateinit var restTemplate: RestTemplate
-
 }

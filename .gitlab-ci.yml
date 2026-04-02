@@ -1,5 +1,6 @@
 variables:
   DOCKER_DRIVER: overlay2
+  GRADLE_OPTS: "-Dorg.gradle.daemon=false"
 
 stages:
   - build
@@ -9,61 +10,84 @@ cache:
   key: ${CI_BUILD_STAGE}
   paths:
     - .gradle
+    - build
 
-build for all:
-  image: openjdk:8-jdk-alpine
+build:
+  image: eclipse-temurin:17-jdk-alpine
   tags:
     - wallet-dev
   stage: build
   script:
-    - pwd
-    - ./gradlew wallet-webapi:bootRepackage
-    - ./gradlew wallet-task:bootRepackage
-    - ./gradlew wallet-hsm:bootRepackage
+    - chmod +x ./gradlew
+    - ./gradlew wallet-webapi:bootJar --no-daemon -x test
+    - ./gradlew wallet-task:bootJar --no-daemon -x test
+    - ./gradlew wallet-hsm:bootJar --no-daemon -x test
   artifacts:
     paths:
       - wallet-webapi/build/libs/*.jar
       - wallet-hsm/build/libs/*.jar
       - wallet-task/build/libs/*.jar
-    expire_in: 20min
+    expire_in: 1 hour
 
-deploy for cl-webapi:
-  image: gitlab/dind:latest
+deploy wallet-webapi:
+  image: docker:latest
+  services:
+    - docker:dind
   tags:
     - wallet-dev
   stage: deploy
   script:
-    - docker stop -f wallet-webapi ||true
-    - docker rm -f wallet-webapi ||true
-    - docker rmi wallet-webapi ||true
-    - docker build -t wallet-webapi wallet-webapi/.
-    - docker run -d --name wallet-webapi -p 10001:10001 -v /etc/localtime:/etc/localtime cl-webapi
+    - docker stop wallet-webapi || true
+    - docker rm wallet-webapi || true
+    - docker rmi wallet-webapi || true
+    - docker build -t wallet-webapi -f wallet-webapi/Dockerfile .
+    - docker run -d --name wallet-webapi
+      --restart unless-stopped
+      -p 10001:10001
+      -v /etc/localtime:/etc/localtime:ro
+      --env-file /etc/wallet/webapi.env
+      wallet-webapi
   when: manual
 
-deploy for cl-task:
-  image: gitlab/dind:latest
+deploy wallet-task:
+  image: docker:latest
+  services:
+    - docker:dind
   tags:
     - wallet-dev
   stage: deploy
   script:
-    - docker stop -f wallet-task ||true
-    - docker rm -f wallet-task ||true
-    - docker rmi wallet-task ||true
-    - docker build -t wallet-task wallet-task/.
-    - docker run -d --name wallet-task -p 10033:10033 -v /etc/localtime:/etc/localtime wallet-task
+    - docker stop wallet-task || true
+    - docker rm wallet-task || true
+    - docker rmi wallet-task || true
+    - docker build -t wallet-task -f wallet-task/Dockerfile .
+    - docker run -d --name wallet-task
+      --restart unless-stopped
+      -p 10033:10033
+      -v /etc/localtime:/etc/localtime:ro
+      --env-file /etc/wallet/task.env
+      wallet-task
   when: manual
 
-deploy for cl-hsm:
-  image: gitlab/dind:latest
+deploy wallet-hsm:
+  image: docker:latest
+  services:
+    - docker:dind
   tags:
     - wallet-dev
   stage: deploy
   script:
-    - docker stop -f wallet-hsm ||true
-    - docker rm -f wallet-hsm ||true
-    - docker rmi wallet-hsm ||true
-    - docker build -t wallet-hsm wallet-hsm/.
-    - docker run -d --name wallet-hsm -p 10888:10888 -v /etc/localtime:/etc/localtime -v /mnt/wallets:/mnt/wallets cl-hsm
+    - docker stop wallet-hsm || true
+    - docker rm wallet-hsm || true
+    - docker rmi wallet-hsm || true
+    - docker build -t wallet-hsm -f wallet-hsm/Dockerfile .
+    - docker run -d --name wallet-hsm
+      --restart unless-stopped
+      -p 10888:10888
+      -v /etc/localtime:/etc/localtime:ro
+      -v /mnt/wallets:/data/keystores
+      --env-file /etc/wallet/hsm.env
+      wallet-hsm
   when: manual
 
 after_script:

@@ -8,29 +8,26 @@ import com.wallet.biz.domain.po.GetTransactionPo
 import com.wallet.biz.domain.vo.GetRecommendFeeVo
 import com.wallet.biz.domain.vo.TransactionVo
 import com.wallet.biz.xservice.BlockChainXService
-import io.swagger.annotations.Api
-import io.swagger.annotations.ApiOperation
+import io.swagger.v3.oas.annotations.Operation
+import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.bind.annotation.*
 import java.math.BigDecimal
 
-/** 
- * Created by pie on 2020/7/11 16: 05. 
- */
 @RestController
-@Api(description = "区块链接口")
+@Tag(name = "BlockChain API", description = "区块链接口")
 @RequestMapping("block_chain/v1")
 class BlockChainController {
 
     @GetMapping("get_transaction")
-    @ApiOperation("查询hash/地址 查询交易(链上查询) type 100查询hash 200查询地址 默认10条")
+    @Operation(summary = "查询交易", description = "查询hash/地址交易(链上查询) type 100查询hash 200查询地址 默认10条")
     fun getTransaction(
-            chain: String?,
-            tokenAddress: String?,
-            hash: String?,
-            address: String?,
-            type: Int?,
-            limit: Int?
+        @RequestParam(required = false) chain: String?,
+        @RequestParam(required = false) tokenAddress: String?,
+        @RequestParam(required = false) hash: String?,
+        @RequestParam(required = false) address: String?,
+        @RequestParam(required = false) type: Int?,
+        @RequestParam(required = false) limit: Int?
     ): TokenResponse<List<TransactionVo>> {
         val getTransactionPo = GetTransactionPo()
         getTransactionPo.chain = chain
@@ -44,30 +41,39 @@ class BlockChainController {
     }
 
     @GetMapping("get_address_balance")
-    @ApiOperation("查询地址余额(链上查询)")
-    fun getAddressBalance(address: String?, chain: String?, tokenAddress: String?): TokenResponse<BigDecimal> {
+    @Operation(summary = "查询地址余额", description = "链上查询")
+    fun getAddressBalance(
+        @RequestParam address: String,
+        @RequestParam chain: String,
+        @RequestParam(required = false) tokenAddress: String?
+    ): TokenResponse<BigDecimal> {
         val getAddressBalancePo = GetAddressBalancePo()
         getAddressBalancePo.address = address
         getAddressBalancePo.chain = chain
         getAddressBalancePo.tokenAddress = tokenAddress
         val any = blockChainXService.getAddressBalance(
-                getAddressBalancePo.chain!!,
-                getAddressBalancePo.address!!,
-                getAddressBalancePo.tokenAddress
+            getAddressBalancePo.chain!!,
+            getAddressBalancePo.address!!,
+            getAddressBalancePo.tokenAddress
         )
         return TokenResponse(any)
     }
 
     @GetMapping("get_recommend_fee")
-    @ApiOperation("获取低中高阶手续费")
-    fun getRecommendFee(chain: String): TokenResponse<GetRecommendFeeVo> {
+    @Operation(summary = "获取推荐手续费", description = "获取低中高阶手续费")
+    fun getRecommendFee(@RequestParam chain: String): TokenResponse<GetRecommendFeeVo> {
         val vo = blockChainXService.getRecommendFee(chain)
         return TokenResponse(vo)
     }
 
     @GetMapping("calculation_fee")
-    @ApiOperation("计算手续费数量")
-    fun calculationFee(gas: Int, gasLimit: Long?, from: String?, chain: String): TokenResponse<BigDecimal> {
+    @Operation(summary = "计算手续费数量")
+    fun calculationFee(
+        @RequestParam gas: Int,
+        @RequestParam(required = false) gasLimit: Long?,
+        @RequestParam(required = false) from: String?,
+        @RequestParam chain: String
+    ): TokenResponse<BigDecimal> {
         val po = CalculationFeePo()
         po.chain = chain
         po.from = from
@@ -78,13 +84,12 @@ class BlockChainController {
     }
 
     @GetMapping("get_support_token")
-    @ApiOperation("获得支持币种")
+    @Operation(summary = "获得支持币种")
     fun getSupportToken(): TokenResponse<Map<String, Any>> {
         val chainList = TokenKey.getChainList()
         val symbolList = TokenKey.getSymbolList()
         return TokenResponse(mapOf("chain" to chainList, "symbol" to symbolList))
     }
-
 
     @Autowired
     lateinit var blockChainXService: BlockChainXService

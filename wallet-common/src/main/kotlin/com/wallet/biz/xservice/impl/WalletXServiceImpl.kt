@@ -441,7 +441,7 @@ open class WalletXServiceImpl : WalletXService, LogService() {
             val signedTx = rpc.signRawTransaction(unsignedTx, null, listOf(wifiKey))
             rpc.sendRawTransaction(signedTx)
         } catch (e: Exception) {
-            log("${ChainType.BITCOINCASH}转币失败，失败原因:${e.message}")
+            log("${chainType}转币失败，失败原因:${e.message}")
             throw e
         }
         saveWithReocord(
@@ -450,10 +450,10 @@ open class WalletXServiceImpl : WalletXService, LogService() {
             sendPo.to!!,
             sendAddr,
             WithType.SEND,
-            ChainType.BITCOINCASH,
+            chainType,
             ""
         )
-        log("${ChainType.BITCOINCASH}转币成功 保存转币记录到数据库")
+        log("${chainType}转币成功 保存转币记录到数据库")
         return txid
     }
 
@@ -899,9 +899,7 @@ open class WalletXServiceImpl : WalletXService, LogService() {
                 Address(toAddress),
                 Uint256(amount.multiply(BigDecimal.TEN.pow(decimals)).toBigInteger())
             ),
-            listOf<TypeReference<*>>(object : TypeReference<Bool>() {
-
-            })
+            listOf<TypeReference<*>>(object : TypeReference<Bool>() {})
         )
         return FunctionEncoder.encode(function)
     }
@@ -910,9 +908,7 @@ open class WalletXServiceImpl : WalletXService, LogService() {
         val function = Function(
             "balanceOf",
             listOf(Address(address)),
-            listOf<TypeReference<*>>(object : TypeReference<Bool>() {
-
-            })
+            listOf<TypeReference<*>>(object : TypeReference<Uint256>() {})
         )
         return FunctionEncoder.encode(function)
     }

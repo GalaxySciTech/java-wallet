@@ -15,7 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.cache.annotation.Cacheable
 import org.springframework.stereotype.Service
 import org.web3j.protocol.core.DefaultBlockParameterName
-import javax.annotation.PostConstruct
+import jakarta.annotation.PostConstruct
 import kotlin.collections.HashMap
 
 /** 

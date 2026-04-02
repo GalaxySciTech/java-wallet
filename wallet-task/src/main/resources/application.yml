@@ -1,35 +1,47 @@
 server:
-  port: 10033
+  port: ${SERVER_PORT:10033}
 
 spring:
   application:
-    name: cl-task
+    name: wallet-task
   datasource:
-    url: jdbc:mysql://127.0.0.1:3306/wallet_db?allowMultiQueries=true&useSSL=false&autoReconnect=true&characterEncoding=UTF-8&autoReconnect=true
-    username: root
-    password: 123456
-    driver-class-name: com.mysql.jdbc.Driver
+    url: ${DB_URL:jdbc:mysql://127.0.0.1:3306/wallet_db?allowMultiQueries=true&useSSL=false&characterEncoding=UTF-8&autoReconnect=true}
+    username: ${DB_USERNAME:root}
+    password: ${DB_PASSWORD:}
+    driver-class-name: com.mysql.cj.jdbc.Driver
     type: com.zaxxer.hikari.HikariDataSource
-#  jpa:
-#    show-sql: true
-#    hibernate:
-#      ddl-auto: update
+    hikari:
+      minimum-idle: 5
+      maximum-pool-size: 20
+      idle-timeout: 300000
+      max-lifetime: 1800000
+      connection-timeout: 30000
+      pool-name: wallet-task-pool
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: none
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQLDialect
   rabbitmq:
-    host: 192.168.123.83
-    port: 5672
-    username: wallet
-    password: wallet
-#eureka:
-#  client:
-#    service-url:
-#      default-zone: http://127.0.0.1:8761/eureka/
-#  instance:
-#    instance-id: ${spring.application.name}:${server.port}
+    host: ${RABBITMQ_HOST:127.0.0.1}
+    port: ${RABBITMQ_PORT:5672}
+    username: ${RABBITMQ_USERNAME:guest}
+    password: ${RABBITMQ_PASSWORD:guest}
+
 xxl:
   job:
-    adminAddresses: http://192.168.3.126:8099/xxl-job-admin
-    appName: cl-task
-    port: 9999
-    accessToken: x
+    adminAddresses: ${XXL_JOB_ADMIN_ADDRESSES:http://127.0.0.1:8099/xxl-job-admin}
+    appName: wallet-task
+    port: ${XXL_JOB_PORT:9999}
+    accessToken: ${XXL_JOB_ACCESS_TOKEN:}
     logPath: task-logs
-    logRetentionDays: 3
+    logRetentionDays: 30
+
+logging:
+  level:
+    root: INFO
+    com.wallet: ${LOG_LEVEL:INFO}
+  file:
+    name: logs/wallet-task.log

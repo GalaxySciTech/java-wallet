@@ -1,0 +1,81 @@
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD:-devpassword}
+      MYSQL_DATABASE: wallet_db
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USERNAME:-guest}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD:-guest}
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "check_port_connectivity"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  wallet-webapi:
+    build:
+      context: .
+      dockerfile: wallet-webapi/Dockerfile
+    ports:
+      - "10001:10001"
+    environment:
+      DB_URL: jdbc:mysql://mysql:3306/wallet_db?allowMultiQueries=true&useSSL=false&characterEncoding=UTF-8&autoReconnect=true
+      DB_USERNAME: root
+      DB_PASSWORD: ${DB_PASSWORD:-devpassword}
+    depends_on:
+      mysql:
+        condition: service_healthy
+
+  wallet-task:
+    build:
+      context: .
+      dockerfile: wallet-task/Dockerfile
+    ports:
+      - "10033:10033"
+    environment:
+      DB_URL: jdbc:mysql://mysql:3306/wallet_db?allowMultiQueries=true&useSSL=false&characterEncoding=UTF-8&autoReconnect=true
+      DB_USERNAME: root
+      DB_PASSWORD: ${DB_PASSWORD:-devpassword}
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_PORT: 5672
+      RABBITMQ_USERNAME: ${RABBITMQ_USERNAME:-guest}
+      RABBITMQ_PASSWORD: ${RABBITMQ_PASSWORD:-guest}
+    depends_on:
+      mysql:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+
+  wallet-hsm:
+    build:
+      context: .
+      dockerfile: wallet-hsm/Dockerfile
+    ports:
+      - "10888:10888"
+    environment:
+      KEYSTORE_DIR: /data/keystores
+      KEYSTORE_PASSWORD: ${KEYSTORE_PASSWORD:-}
+    volumes:
+      - keystore_data:/data/keystores
+
+volumes:
+  mysql_data:
+  keystore_data:

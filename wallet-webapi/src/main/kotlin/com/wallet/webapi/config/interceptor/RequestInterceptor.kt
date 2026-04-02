@@ -6,20 +6,18 @@ import com.wallet.biz.domain.exception.BizException
 import com.wallet.biz.service.UserService
 import com.wallet.biz.service.WhiteService
 import com.wallet.entity.domain.White
+import jakarta.servlet.http.HttpServletRequest
+import jakarta.servlet.http.HttpServletResponse
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
-import org.springframework.web.servlet.handler.HandlerInterceptorAdapter
-import javax.servlet.http.HttpServletRequest
-import javax.servlet.http.HttpServletResponse
+import org.springframework.web.servlet.HandlerInterceptor
 
 @Component
-open class RequestInterceptor : HandlerInterceptorAdapter() {
+open class RequestInterceptor : HandlerInterceptor {
 
-    override fun preHandle(request: HttpServletRequest, response: HttpServletResponse, handler: Any?): Boolean {
-        val clientIp = request.getHeader("X-Real-IP")
-
+    override fun preHandle(request: HttpServletRequest, response: HttpServletResponse, handler: Any): Boolean {
         val requestURI = request.requestURI
-        if (requestURI!!.contains("swagger")
+        if (requestURI.contains("swagger")
             || requestURI.contains("api-docs")
             || requestURI.contains("/error")
             || requestURI.contains("ops")
@@ -28,7 +26,7 @@ open class RequestInterceptor : HandlerInterceptorAdapter() {
             return true
         }
 
-        val ip = request.remoteAddr
+        val ip = request.getHeader("X-Real-IP") ?: request.remoteAddr
         val find = PageEntity(White())
         find.entity.ip = ip
         val list = whiteService.findByEntity(find).toList()
@@ -45,6 +43,4 @@ open class RequestInterceptor : HandlerInterceptorAdapter() {
 
     @Autowired
     lateinit var userService: UserService
-
-
 }

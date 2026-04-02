@@ -6,44 +6,40 @@ import com.wallet.biz.domain.po.*
 import com.wallet.biz.domain.vo.TransactionLogVo
 import com.wallet.biz.xservice.WalletXService
 import com.wallet.entity.domain.Deposit
-import io.swagger.annotations.Api
-import io.swagger.annotations.ApiOperation
+import io.swagger.v3.oas.annotations.Operation
+import io.swagger.v3.oas.annotations.tags.Tag
 import org.consenlabs.tokencore.wallet.model.ChainType
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.Page
 import org.springframework.web.bind.annotation.*
 import java.math.BigDecimal
 
-/** 
- * Created by pie on 2019-04-11 16: 36. 
- */
 @RestController
-@Api(description = "本地钱包接口")
+@Tag(name = "Wallet API", description = "本地钱包接口")
 @RequestMapping("wallet/v1")
 class WalletController {
 
-    @GetMapping("get_address")
-    @ApiOperation("获得地址 例如/getaddr/BITCOIN  chainType(btc:${ChainType.BITCOIN}|eth:${ChainType.ETHEREUM}|trx:${ChainType.TRON})")
-    fun getAddress(chain: String, num: Int): TokenResponse<List<String?>> {
+    @PostMapping("get_address")
+    @Operation(summary = "获得地址", description = "chainType(btc:BITCOIN|eth:ETHEREUM|trx:TRON)")
+    fun getAddress(@RequestParam chain: String, @RequestParam num: Int): TokenResponse<List<String?>> {
         val getAddressPo = GetAddressPo()
         getAddressPo.chain = chain
         getAddressPo.num = num
-        val list = walletXService.getAddress(getAddressPo.chain!!.toUpperCase(), getAddressPo.num!!)
-//        val list= arrayListOf("18fiBrC2Gnnih53S9Aq5hiuNRD21xm5o7p","1LrtBDVdxDnq7WVoLmSLJT7iw6GLKZhSGt")
+        val list = walletXService.getAddress(getAddressPo.chain!!.uppercase(), getAddressPo.num!!)
         return TokenResponse(list)
     }
 
-    @GetMapping("send")
-    @ApiOperation("提现(指定提现from地址,不指定将从热钱包转出)")
+    @PostMapping("send")
+    @Operation(summary = "提现", description = "指定提现from地址,不指定将从热钱包转出")
     fun send(
-        amount: BigDecimal,
-        chain: String,
-        from: String?,
-        symbol: String?,
-        to: String,
-        gas: Int?,
-        gasLimit: Long?,
-        data: String?
+        @RequestParam amount: BigDecimal,
+        @RequestParam chain: String,
+        @RequestParam(required = false) from: String?,
+        @RequestParam(required = false) symbol: String?,
+        @RequestParam to: String,
+        @RequestParam(required = false) gas: Int?,
+        @RequestParam(required = false) gasLimit: Long?,
+        @RequestParam(required = false) data: String?
     ): TokenResponse<Any> {
         val sendPo = SendPo()
         sendPo.amount = amount
@@ -59,8 +55,8 @@ class WalletController {
     }
 
     @GetMapping("get_hot_address")
-    @ApiOperation("查询热钱包地址 type 100发送钱包300gas钱包")
-    fun getHotAddress(chain: String, type: Int): TokenResponse<List<String>?> {
+    @Operation(summary = "查询热钱包地址", description = "type 100发送钱包300gas钱包")
+    fun getHotAddress(@RequestParam chain: String, @RequestParam type: Int): TokenResponse<List<String>?> {
         val getHotAddressPo = GetHotAddressPo()
         getHotAddressPo.chain = chain
         getHotAddressPo.type = type
@@ -68,9 +64,9 @@ class WalletController {
         return TokenResponse(addr)
     }
 
-    @GetMapping("create_hot_address")
-    @ApiOperation("生成热钱包地址 type(100发送钱包 300gas钱包)")
-    fun createHotAddress(type: Int, chain: String): TokenResponse<String> {
+    @PostMapping("create_hot_address")
+    @Operation(summary = "生成热钱包地址", description = "type(100发送钱包 300gas钱包)")
+    fun createHotAddress(@RequestParam type: Int, @RequestParam chain: String): TokenResponse<String> {
         val createHotAddressPo = CreateHotAddressPo()
         createHotAddressPo.type = type
         createHotAddressPo.chain = chain
@@ -79,8 +75,8 @@ class WalletController {
     }
 
     @GetMapping("check_address")
-    @ApiOperation("检测地址私钥存在")
-    fun checkAddress(address: String, chain: String): TokenResponse<Any> {
+    @Operation(summary = "检测地址私钥存在")
+    fun checkAddress(@RequestParam address: String, @RequestParam chain: String): TokenResponse<Any> {
         val checkAddressPo = CheckAddressPo()
         checkAddressPo.address = address
         checkAddressPo.chain = chain
@@ -89,26 +85,26 @@ class WalletController {
     }
 
     @GetMapping("get_new_deposit")
-    @ApiOperation("获得充值交易(备用) 拿一次就消失")
+    @Operation(summary = "获得充值交易(备用) 拿一次就消失")
     fun getDepositTransaction(): TokenResponse<List<Deposit>> {
         val list = walletXService.getDepositTransactionAndSave()
         return TokenResponse(list)
     }
 
     @GetMapping("get_transaction")
-    @ApiOperation("获得记录 type(充值 100 |提现 200| 归集 300|发送gas费 400  )")
-    fun getLocalTransaction(type: Int, page: Int, size: Int): TokenResponse<Page<TransactionLogVo>> {
-        val list = walletXService.getLocalTransaction(
-            type,
-            page,
-            size
-        )
+    @Operation(summary = "获得记录", description = "type(充值 100 |提现 200| 归集 300|发送gas费 400)")
+    fun getLocalTransaction(
+        @RequestParam type: Int,
+        @RequestParam page: Int,
+        @RequestParam size: Int
+    ): TokenResponse<Page<TransactionLogVo>> {
+        val list = walletXService.getLocalTransaction(type, page, size)
         return TokenResponse(list)
     }
 
-    @GetMapping("export_wallet")
-    @ApiOperation("导出私钥/助记词(比特币只能导入导出助记词) |私钥${KeyType.PRIVATE}|助记词${KeyType.MNEMONIC}")
-    fun exportWallet(walletCode: String, type: Int): TokenResponse<String> {
+    @PostMapping("export_wallet")
+    @Operation(summary = "导出私钥/助记词", description = "比特币只能导入导出助记词 |私钥${KeyType.PRIVATE}|助记词${KeyType.MNEMONIC}")
+    fun exportWallet(@RequestParam walletCode: String, @RequestParam type: Int): TokenResponse<String> {
         val exportWalletPo = ExportWalletPo()
         exportWalletPo.walletCode = walletCode
         exportWalletPo.type = type
@@ -116,9 +112,13 @@ class WalletController {
         return TokenResponse(key)
     }
 
-    @GetMapping("import_wallet")
-    @ApiOperation("导入私钥/助记词(比特币只能导入导出助记词) |私钥${KeyType.PRIVATE}|助记词${KeyType.MNEMONIC}")
-    fun importWallet(type: Int, chain: String, key: String): TokenResponse<String> {
+    @PostMapping("import_wallet")
+    @Operation(summary = "导入私钥/助记词", description = "比特币只能导入导出助记词 |私钥${KeyType.PRIVATE}|助记词${KeyType.MNEMONIC}")
+    fun importWallet(
+        @RequestParam type: Int,
+        @RequestParam chain: String,
+        @RequestParam key: String
+    ): TokenResponse<String> {
         val importWalletPo = ImportWalletPo()
         importWalletPo.type = type
         importWalletPo.chain = chain
@@ -127,52 +127,20 @@ class WalletController {
         return TokenResponse(address)
     }
 
-    @GetMapping("remove_useless_wallet")
-    @ApiOperation("清除无用的钱包")
+    @PostMapping("remove_useless_wallet")
+    @Operation(summary = "清除无用的钱包")
     fun removeUselessWallet(): TokenResponse<Any> {
         walletXService.removeUselessWallet()
         return TokenResponse()
     }
 
     @GetMapping("check_tx_status")
-    @ApiOperation("检查交易状态")
-    fun checkTxStatus(hash: String, chain: String): TokenResponse<Boolean> {
+    @Operation(summary = "检查交易状态")
+    fun checkTxStatus(@RequestParam hash: String, @RequestParam chain: String): TokenResponse<Boolean> {
         val status = walletXService.checkTxStatus(hash, chain)
         return TokenResponse(status)
     }
 
-
-//    @GetMapping("put_all_address_to_wait_import")
-//    @ApiOperation("把所有地址导入到节点")
-//    fun putAllAddressToWaitImport(): TokenResponse<Any>{
-//        walletXService.putAllAddressToWaitImport()
-//        return TokenResponse()
-//    }
-
-//    @GetMapping("add_wait_collect")
-//    @ApiOperation("添加待归集地址")
-//    fun addWaitCollect(): TokenResponse<Any> {
-//        walletXService.addWaitCollect()
-//        return TokenResponse()
-//    }
-
-//    @PostMapping("rescan_transaction")
-//    @ApiOperation("重扫充值交易")
-//    fun rescanTransaction(@RequestBody rescanTransactionPo:RescanTransactionPo): TokenResponse<Any>{
-//        walletXService.rescanTransaction(rescanTransactionPo)
-//        return TokenResponse()
-//    }
-//
-//    @PostMapping("rescan_block")
-//    @ApiOperation("重扫区块高度")
-//    fun rescanBlock(@RequestBody rescanBlockPo:RescanBlockPo): TokenResponse<Any>{
-//        walletXService.rescanBlock(rescanBlockPo)
-//        return TokenResponse()
-//    }
-
-
     @Autowired
     lateinit var walletXService: WalletXService
-
-
 }

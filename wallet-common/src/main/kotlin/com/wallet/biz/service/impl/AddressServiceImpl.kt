@@ -12,7 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired
 class AddressServiceImpl: AddressService {
 
     override fun delete(id: Long) {
-        addressRepository.delete(id)
+        addressRepository.deleteById(id)
     }
 
     override fun findAllBitcoinFork(): List<Address> {
@@ -47,7 +47,7 @@ class AddressServiceImpl: AddressService {
     }
 
     override fun saveAll(list: List<Address>): List<Address> {
-        return addressRepository.save(list)
+        return addressRepository.saveAll(list)
     }
 
     override fun findByType(chainType: String?): List<Address> {
@@ -62,7 +62,7 @@ class AddressServiceImpl: AddressService {
     }
 
     override fun getById(id:Long): Address? {
-        return addressRepository.findOne(id)
+        return addressRepository.findById(id).orElse(null)
     }
 
     override fun save(address:Address): Address {

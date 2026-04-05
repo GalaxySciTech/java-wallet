@@ -13,7 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired
 class ConfigServiceImpl: ConfigService {
 
     override fun getById(id:Long): Config? {
-        return configRepository.findOne(id)
+        return configRepository.findById(id).orElse(null)
     }
 
     override fun save(config:Config): Config {
@@ -33,13 +33,13 @@ class ConfigServiceImpl: ConfigService {
     }
 
     override fun update(config: Config) {
-        val e=configRepository.findOne(config.id)
+        val e=configRepository.findById(config.id).orElse(null)
         BasicUtils.copyPropertiesIgnoreNull(config,e)
         configRepository.save(e)
     }
 
     override fun del(id: Long) {
-        configRepository.delete(id)
+        configRepository.deleteById(id)
     }
 
     @Autowired lateinit var configRepository: ConfigRepository

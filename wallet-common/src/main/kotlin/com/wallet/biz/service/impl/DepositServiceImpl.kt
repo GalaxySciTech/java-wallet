@@ -19,7 +19,7 @@ class DepositServiceImpl: DepositService {
     }
 
     override fun saveAll(list: List<Deposit>): List<Deposit> {
-        return depositRepository.save(list)
+        return depositRepository.saveAll(list)
     }
 
     override fun getByIsUpload(isUpload: Int): List<Deposit> {
@@ -53,11 +53,11 @@ class DepositServiceImpl: DepositService {
             pre=pre.and(QDeposit.deposit.tokenSymbol.eq(entity.tokenSymbol))
         if(entity.chainType!=null)
             pre=pre.and(QDeposit.deposit.chainType.eq(entity.chainType))
-        return depositRepository.findAll(pre, PageRequest(find.page, find.size))
+        return depositRepository.findAll(pre, PageRequest.of(find.page, find.size))
     }
 
     override fun getById(id:Long): Deposit? {
-        return depositRepository.findOne(id)
+        return depositRepository.findById(id).orElse(null)
     }
 
     override fun save(deposit:Deposit): Deposit {

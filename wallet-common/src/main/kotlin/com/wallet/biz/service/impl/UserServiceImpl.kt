@@ -11,7 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired
 class UserServiceImpl: UserService {
 
     override fun getById(id:Long): User? {
-        return userRepository.findOne(id)
+        return userRepository.findById(id).orElse(null)
     }
 
     override fun save(user: User): User {

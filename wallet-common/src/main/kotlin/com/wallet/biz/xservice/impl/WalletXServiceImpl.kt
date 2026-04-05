@@ -71,7 +71,7 @@ open class WalletXServiceImpl : WalletXService, LogService() {
                     txLogVo.type = TxLogDict.DEPOSIT
                     txLogVo
                 }
-                PageImpl(pageList.toList(), PageRequest(page, size), pageList.totalElements)
+                PageImpl(pageList.toList(), PageRequest.of(page, size), pageList.totalElements)
             }
             TxLogDict.WITHDRAW -> {
                 val find = PageEntity(Withdraw())
@@ -90,7 +90,7 @@ open class WalletXServiceImpl : WalletXService, LogService() {
                     txLogVo.type = TxLogDict.WITHDRAW
                     txLogVo
                 }
-                PageImpl(pageList.toList(), PageRequest(page, size), pageList.totalElements)
+                PageImpl(pageList.toList(), PageRequest.of(page, size), pageList.totalElements)
             }
             TxLogDict.COLLECT -> {
                 val find = PageEntity(Withdraw())
@@ -109,7 +109,7 @@ open class WalletXServiceImpl : WalletXService, LogService() {
                     txLogVo.type = TxLogDict.WITHDRAW
                     txLogVo
                 }
-                PageImpl(pageList.toList(), PageRequest(page, size), pageList.totalElements)
+                PageImpl(pageList.toList(), PageRequest.of(page, size), pageList.totalElements)
             }
             TxLogDict.SEND_FEE -> {
                 val find = PageEntity(Withdraw())
@@ -128,7 +128,7 @@ open class WalletXServiceImpl : WalletXService, LogService() {
                     txLogVo.type = TxLogDict.WITHDRAW
                     txLogVo
                 }
-                PageImpl(pageList.toList(), PageRequest(page, size), pageList.totalElements)
+                PageImpl(pageList.toList(), PageRequest.of(page, size), pageList.totalElements)
             }
             else -> throw BizException(ErrorCode.ERROR_PARAM)
         }

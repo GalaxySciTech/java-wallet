@@ -1,29 +1,28 @@
 package com.wallet.biz.domain.po
 
-import io.swagger.annotations.ApiModel
-import io.swagger.annotations.ApiModelProperty
+import io.swagger.v3.oas.annotations.media.Schema
 import java.math.BigDecimal
 
 /** 
  * Created by pie on 2019-04-12 09: 50. 
  */
-@ApiModel
+@Schema
 class SendPo{
 
-    @ApiModelProperty("发送者地址")
+    @Schema(description = "发送者地址")
     var from:String?=null
-    @ApiModelProperty("发送者地址code")
+    @Schema(description = "发送者地址code")
     var fromWalletCode:String?=null
 
-    @ApiModelProperty("接收者地址")
+    @Schema(description = "接收者地址")
     var to:String?=null
-    @ApiModelProperty("数量")
+    @Schema(description = "数量")
     var amount:BigDecimal?=null
-    @ApiModelProperty("币种类型  例: ETHEREUM")
+    @Schema(description = "币种类型  例: ETHEREUM")
     var chain:String?=null
-    @ApiModelProperty("代币类型 例: USDT")
+    @Schema(description = "代币类型 例: USDT")
     var symbol :String?=null
-    @ApiModelProperty("手续费价格 gas")
+    @Schema(description = "手续费价格 gas")
     var gas:Int?=null
 
     var data:String?=null

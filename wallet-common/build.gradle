@@ -1,6 +1,10 @@
+apply plugin: 'java-library'
+
 bootJar.enabled = false
 jar.enabled = true
 
 dependencies {
-    implementation project(":wallet-entity")
+    api project(":wallet-entity")
+    implementation 'commons-codec:commons-codec:1.16.0'
+    implementation 'org.bitcoinj:bitcoinj-core:0.14.7'
 }

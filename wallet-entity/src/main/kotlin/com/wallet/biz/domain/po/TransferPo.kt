@@ -1,12 +1,12 @@
 package com.wallet.biz.domain.po
 
-import io.swagger.annotations.ApiModel
+import io.swagger.v3.oas.annotations.media.Schema
 import java.math.BigDecimal
 
 /** 
  * Created by pie on 2019-03-08 17: 03. 
  */
-@ApiModel
+@Schema
 class TransferPo{
 
     var chainType:String?=null

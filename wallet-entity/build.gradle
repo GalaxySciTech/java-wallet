@@ -1,9 +1,12 @@
+apply plugin: 'java-library'
+
 bootJar.enabled = false
 jar.enabled = true
 
 dependencies {
-    implementation "com.querydsl:querydsl-jpa:$querydslVersion:jakarta"
-    implementation "com.querydsl:querydsl-sql-spring:$querydslVersion"
-    implementation "com.querydsl:querydsl-sql:$querydslVersion"
-    implementation "com.querydsl:querydsl-core:$querydslVersion"
+    api "com.querydsl:querydsl-jpa:$querydslVersion:jakarta"
+    api "com.querydsl:querydsl-sql-spring:$querydslVersion"
+    api "com.querydsl:querydsl-sql:$querydslVersion"
+    api "com.querydsl:querydsl-core:$querydslVersion"
+    api 'io.github.qyvlik:io.eblock.eos-eos4j:1.0.1'
 }

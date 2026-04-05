@@ -1,18 +1,17 @@
 package com.wallet.biz.domain.vo
 
-import io.swagger.annotations.ApiModel
-import io.swagger.annotations.ApiModelProperty
+import io.swagger.v3.oas.annotations.media.Schema
 
 /** 
  * Created by pie on 2019-03-05 11: 55. 
  */
-@ApiModel
+@Schema
 class CustomerInfoVo {
 
-    @ApiModelProperty("用户名")
+    @Schema(description = "用户名")
     var customerName: String? = null
 
-    @ApiModelProperty("vip等级")
+    @Schema(description = "vip等级")
     var vipLevel:Int?=null
 
 

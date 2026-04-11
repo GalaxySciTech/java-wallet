@@ -25,17 +25,17 @@ class TokenServiceImpl: TokenService {
     }
 
     override fun update(token: Token) {
-        val e=tokenRepository.findOne(token.id)
+        val e=tokenRepository.findById(token.id).orElse(null)
         BasicUtils.copyPropertiesIgnoreNull(token,e)
         tokenRepository.save(e)
     }
 
     override fun del(id: Long) {
-        return tokenRepository.delete(id)
+        return tokenRepository.deleteById(id)
     }
 
     override fun getById(id:Long): Token? {
-        return tokenRepository.findOne(id)
+        return tokenRepository.findById(id).orElse(null)
     }
 
     override fun save(token:Token): Token {

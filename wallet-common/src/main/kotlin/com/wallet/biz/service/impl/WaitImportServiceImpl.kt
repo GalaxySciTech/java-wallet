@@ -10,7 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired
 class WaitImportServiceImpl: WaitImportService {
 
     override fun getById(id:Long): WaitImport? {
-        return waitImportRepository.findOne(id)
+        return waitImportRepository.findById(id).orElse(null)
     }
 
     override fun save(waitImport:WaitImport): WaitImport {
@@ -18,7 +18,7 @@ class WaitImportServiceImpl: WaitImportService {
     }
 
     override fun saveAll(waitImportList: List<WaitImport>): List<WaitImport> {
-        return waitImportRepository.save(waitImportList)
+        return waitImportRepository.saveAll(waitImportList)
     }
 
     override fun findAll(): List<WaitImport> {
@@ -26,7 +26,7 @@ class WaitImportServiceImpl: WaitImportService {
     }
 
     override fun deleteById(id: Long) {
-        waitImportRepository.delete(id)
+        waitImportRepository.deleteById(id)
     }
     
     @Autowired lateinit var waitImportRepository: WaitImportRepository

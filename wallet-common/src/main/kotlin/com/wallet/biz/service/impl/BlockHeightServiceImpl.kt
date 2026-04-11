@@ -13,7 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired
 class BlockHeightServiceImpl: BlockHeightService {
 
     override fun getById(id:Long): BlockHeight? {
-        return blockHeightRepository.findOne(id)
+        return blockHeightRepository.findById(id).orElse(null)
     }
 
     override fun save(blockHeight:BlockHeight): BlockHeight {
@@ -33,13 +33,13 @@ class BlockHeightServiceImpl: BlockHeightService {
     }
 
     override fun update(blockHeight: BlockHeight) {
-        val e=blockHeightRepository.findOne(blockHeight.id)
+        val e=blockHeightRepository.findById(blockHeight.id).orElse(null)
         BasicUtils.copyPropertiesIgnoreNull(blockHeight,e)
         blockHeightRepository.save(e)
     }
 
     override fun del(id: Long) {
-        blockHeightRepository.delete(id)
+        blockHeightRepository.deleteById(id)
     }
 
     @Autowired lateinit var blockHeightRepository: BlockHeightRepository

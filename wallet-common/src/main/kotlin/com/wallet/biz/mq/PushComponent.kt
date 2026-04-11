@@ -21,7 +21,7 @@ class PushComponent : LogService() {
 
     private fun getEncryptionKey(): String {
         return pushEncryptionKey
-            ?: throw BizException(ErrorCode.ERROR_PARAM, "Push encryption key not configured (wallet.crypto.push-key)")
+            ?: throw BizException(ErrorCode.ERROR_PARAM.code, "Push encryption key not configured (wallet.crypto.push-key)")
     }
 
     fun sendMsgToMq(msg: String) {

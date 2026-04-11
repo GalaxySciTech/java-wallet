@@ -8,6 +8,7 @@ mainClassName = "com.wallet.HsmApplicationKt"
 
 dependencies {
     implementation project(":wallet-entity")
+    implementation 'io.github.qyvlik:io.eblock.eos-eos4j:1.0.1'
 }
 
 jib {

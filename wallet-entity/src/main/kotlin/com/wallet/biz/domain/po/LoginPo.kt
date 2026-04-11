@@ -1,12 +1,11 @@
 package com.wallet.biz.domain.po
 
-import io.swagger.annotations.ApiModel
-import io.swagger.annotations.ApiModelProperty
+import io.swagger.v3.oas.annotations.media.Schema
 
-@ApiModel
+@Schema
 class LoginPo{
-    @ApiModelProperty("用户名")
+    @Schema(description = "用户名")
     var customerName:String?=null
-    @ApiModelProperty("密码")
+    @Schema(description = "密码")
     var password:String?=null
 }

@@ -15,7 +15,7 @@ import org.springframework.data.domain.PageRequest
 class WhiteServiceImpl: WhiteService {
 
     override fun getById(id:Long): White? {
-        return whiteRepository.findOne(id)
+        return whiteRepository.findById(id).orElse(null)
     }
 
     override fun save(white:White): White {
@@ -27,7 +27,7 @@ class WhiteServiceImpl: WhiteService {
         val entity = find.entity
         if (entity.ip != null)
             pre = pre.and(QWhite.white.ip.eq(entity.ip).or(QWhite.white.ip.eq("0.0.0.0")))
-        return whiteRepository.findAll(pre, PageRequest(find.page, find.size))
+        return whiteRepository.findAll(pre, PageRequest.of(find.page, find.size))
     }
 
     override fun findAll(): List<White> {
@@ -35,13 +35,13 @@ class WhiteServiceImpl: WhiteService {
     }
 
     override fun update(white: White) {
-        val e=whiteRepository.findOne(white.id)
+        val e=whiteRepository.findById(white.id).orElse(null)
         BasicUtils.copyPropertiesIgnoreNull(white,e)
         whiteRepository.save(e)
     }
 
     override fun del(id: Long) {
-        whiteRepository.delete(id)
+        whiteRepository.deleteById(id)
     }
 
     @Autowired lateinit var whiteRepository: WhiteRepository

@@ -16,7 +16,7 @@ class WaitCollectServiceImpl: WaitCollectService {
         if (waitCollect.chainType == null) return
         val list = getByBean(waitCollect)
 
-        waitCollectRepository.delete(list)
+        waitCollectRepository.deleteAll(list)
     }
 
     override fun getByBean(waitCollect: WaitCollect): List<WaitCollect> {
@@ -34,7 +34,7 @@ class WaitCollectServiceImpl: WaitCollectService {
     }
 
     override fun getById(id:Long): WaitCollect? {
-        return waitCollectRepository.findOne(id)
+        return waitCollectRepository.findById(id).orElse(null)
     }
 
     override fun save(waitCollect:WaitCollect): WaitCollect {

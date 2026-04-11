@@ -1,11 +1,10 @@
 package com.wallet.biz.domain.po
 
-import io.swagger.annotations.ApiModel
-import io.swagger.annotations.ApiModelProperty
+import io.swagger.v3.oas.annotations.media.Schema
 /** 
  * Created by pie on 2020/7/8 04: 34. 
  */
-@ApiModel
+@Schema
 class GetTransactionPo {
 
     var chain:String?=null
@@ -16,7 +15,7 @@ class GetTransactionPo {
 
     var type:Int?=null
 
-    @ApiModelProperty("合约地址")
+    @Schema(description = "合约地址")
     var tokenAddress:String?=null
 
     var limit:Int?=null

@@ -37,17 +37,17 @@ class AddressAdminServiceImpl: AddressAdminService {
     }
 
     override fun del(id: Long) {
-        addressAdminRepository.delete(id)
+        addressAdminRepository.deleteById(id)
     }
 
     override fun update(addressAdmin: AddressAdmin) {
-        val e = addressAdminRepository.findOne(addressAdmin.id)
+        val e = addressAdminRepository.findById(addressAdmin.id).orElse(null)
         BasicUtils.copyPropertiesIgnoreNull(addressAdmin, e)
         addressAdminRepository.save(e)
     }
 
     override fun getById(id:Long): AddressAdmin? {
-        return addressAdminRepository.findOne(id)
+        return addressAdminRepository.findById(id).orElse(null)
     }
 
     override fun save(addressAdmin:AddressAdmin): AddressAdmin {

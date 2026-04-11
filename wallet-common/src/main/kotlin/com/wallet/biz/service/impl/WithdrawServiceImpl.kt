@@ -23,7 +23,7 @@ class WithdrawServiceImpl : WithdrawService {
             pre = pre.and(QWithdraw.withdraw.withdrawType.eq(entity.withdrawType))
         val sort = QSort(QWithdraw.withdraw.createdAt.desc())
 
-        return withdrawRepository.findAll(pre, PageRequest(find.page, find.size, sort))
+        return withdrawRepository.findAll(pre, PageRequest.of(find.page, find.size, sort))
     }
 
     override fun findAll(): List<Withdraw> {
@@ -40,7 +40,7 @@ class WithdrawServiceImpl : WithdrawService {
     }
 
     override fun getById(id: Long): Withdraw? {
-        return withdrawRepository.findOne(id)
+        return withdrawRepository.findById(id).orElse(null)
     }
 
     override fun save(withdraw: Withdraw): Withdraw {

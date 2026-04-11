@@ -1,27 +1,26 @@
 package com.wallet.biz.domain.po
 
-import io.swagger.annotations.ApiModel
-import io.swagger.annotations.ApiModelProperty
+import io.swagger.v3.oas.annotations.media.Schema
 
 /** 
  * Created by pie on 2019-03-08 17: 17. 
  */
-@ApiModel
+@Schema
 class RegisteredPo{
 
-    @ApiModelProperty("手机号(即用户名)",required = true)
+    @Schema(description = "手机号(即用户名)", requiredMode = Schema.RequiredMode.REQUIRED)
     var customerName:String?=null
 
-    @ApiModelProperty("登录密码",required = true)
+    @Schema(description = "登录密码", requiredMode = Schema.RequiredMode.REQUIRED)
     var password:String?=null
 
-    @ApiModelProperty("sms验证码",required = true)
+    @Schema(description = "sms验证码", requiredMode = Schema.RequiredMode.REQUIRED)
     var smsCode:Int?=null
 
-    @ApiModelProperty("邀请码",required = true)
+    @Schema(description = "邀请码", requiredMode = Schema.RequiredMode.REQUIRED)
     var inviteCode:String?=null
 
-    @ApiModelProperty("交易密码",required = true)
+    @Schema(description = "交易密码", requiredMode = Schema.RequiredMode.REQUIRED)
     var tradePassword:String?=null
 
 }

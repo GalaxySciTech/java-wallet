@@ -64,7 +64,15 @@ class TrxApi(val url: String, val restTemplate: RestTemplate) {
         val sBytes = signature.s.toByteArray()
         System.arraycopy(rBytes, Math.max(0, rBytes.size - 32), sigBytes, Math.max(0, 32 - rBytes.size), Math.min(32, rBytes.size))
         System.arraycopy(sBytes, Math.max(0, sBytes.size - 32), sigBytes, Math.max(0, 64 - sBytes.size), Math.min(32, sBytes.size))
-        sigBytes[64] = ecKey.findRecoveryId(org.bitcoinj.core.Sha256Hash.wrap(txIdBytes), signature).toByte()
+        var recId = -1
+        for (i in 0..3) {
+            val recovered = org.bitcoinj.core.ECKey.recoverFromSignature(i, signature, org.bitcoinj.core.Sha256Hash.wrap(txIdBytes), false)
+            if (recovered != null && recovered.pubKeyPoint == ecKey.pubKeyPoint) {
+                recId = i
+                break
+            }
+        }
+        sigBytes[64] = recId.toByte()
 
         val signatureHex = NumericUtil.bytesToHex(sigBytes)
 

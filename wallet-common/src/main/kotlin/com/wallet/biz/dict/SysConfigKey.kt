@@ -1,7 +1,15 @@
 package com.wallet.biz.dict
 
-/** 
- * Created by pie on 2020/7/24 18: 50. 
+    DEPOSIT_NOTIFY_MODE("post","充值同步模式，支持 post","充值通知"),
+    SCHEDULER_DEPOSIT_SCAN_ENABLED("true", "充值扫描任务开关", "任务调度"),
+    SCHEDULER_DEPOSIT_SCAN_MS("15000", "充值扫描任务间隔毫秒", "任务调度"),
+    SCHEDULER_CHAIN_SYNC_ENABLED("true", "区块同步任务开关", "任务调度"),
+    SCHEDULER_CHAIN_SYNC_MS("20000", "区块同步任务间隔毫秒", "任务调度"),
+    SCHEDULER_SWEEP_ENABLED("false", "归集任务开关", "任务调度"),
+    SCHEDULER_SWEEP_MS("30000", "归集任务间隔毫秒", "任务调度"),
+    SCHEDULER_FEE_SUPPLY_ENABLED("false", "手续费补充任务开关", "任务调度"),
+    SCHEDULER_FEE_SUPPLY_MS("30000", "手续费补充任务间隔毫秒", "任务调度");
+
  */
 enum class SysConfigKey(var defaultValue:String,var description:String,var group:String) {
 

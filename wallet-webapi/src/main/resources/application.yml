@@ -1,35 +1,27 @@
 server:
-  port: ${SERVER_PORT:10001}
+  port: ${SERVER_PORT:8080}
 
 spring:
   application:
-    name: wallet-webapi
+    name: java-wallet-app
   datasource:
     url: ${DB_URL:jdbc:mysql://127.0.0.1:3306/wallet_db?allowMultiQueries=true&useSSL=false&characterEncoding=UTF-8&autoReconnect=true}
     username: ${DB_USERNAME:root}
     password: ${DB_PASSWORD:}
     driver-class-name: com.mysql.cj.jdbc.Driver
-    type: com.zaxxer.hikari.HikariDataSource
-    hikari:
-      minimum-idle: 5
-      maximum-pool-size: 20
-      idle-timeout: 300000
-      max-lifetime: 1800000
-      connection-timeout: 30000
-      pool-name: wallet-webapi-pool
-  jackson:
-    date-format: yyyy-MM-dd HH:mm
   jpa:
     open-in-view: false
     hibernate:
       ddl-auto: none
-    properties:
-      hibernate:
-        dialect: org.hibernate.dialect.MySQLDialect
+
+wallet:
+  keystore:
+    dir: ${WALLET_KEYSTORE_DIR:./data/keystore}
+    password: ${WALLET_KEYSTORE_PASSWORD:change-me}
+  scheduler:
+    enabled: true
 
 logging:
   level:
     root: INFO
     com.wallet: ${LOG_LEVEL:INFO}
-  file:
-    name: logs/wallet-webapi.log

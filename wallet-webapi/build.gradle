@@ -8,6 +8,7 @@ mainClassName = "com.wallet.WebApiApplicationKt"
 
 dependencies {
     implementation project(":wallet-common")
+    implementation project(":wallet-hsm")
 }
 
 jib {
@@ -19,7 +20,7 @@ jib {
     }
     container {
         mainClass = 'com.wallet.WebApiApplicationKt'
-        ports = ['10001']
+        ports = ['8080']
         jvmFlags = ['-Xms256m', '-Xmx512m', '-Djava.security.egd=file:/dev/./urandom']
     }
 }

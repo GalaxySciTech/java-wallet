@@ -1,13 +1,11 @@
 package com.wallet.biz.mq
 
 import com.fasterxml.jackson.databind.JsonNode
-import com.wallet.biz.dict.MqKey
 import com.wallet.biz.dict.SysConfigKey
 import com.wallet.biz.domain.dict.ErrorCode
 import com.wallet.biz.domain.exception.BizException
 import com.wallet.biz.log.impl.LogService
 import com.wallet.biz.utils.Crypto
-import org.springframework.amqp.core.AmqpTemplate
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
@@ -25,7 +23,7 @@ class PushComponent : LogService() {
     }
 
     fun sendMsgToMq(msg: String) {
-        amqpTemplate.convertAndSend(MqKey.TOPIC_EXCHANGE, MqKey.DEPOSIT_KEY, msg)
+        sendMsgToService(msg)
     }
 
     fun sendMsgToService(msg: String) {
@@ -38,9 +36,6 @@ class PushComponent : LogService() {
             if (code != 200) throw BizException(ErrorCode.UPLOAD_FAILURE)
         }
     }
-
-    @Autowired
-    lateinit var amqpTemplate: AmqpTemplate
 
     @Autowired
     lateinit var restTemplate: RestTemplate

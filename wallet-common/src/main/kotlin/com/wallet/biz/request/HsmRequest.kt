@@ -1,163 +1,29 @@
 package com.wallet.biz.request
 
-import com.wallet.biz.dict.HsmReuqestType
-import com.wallet.biz.dict.SysConfigKey
-import com.wallet.biz.domain.dict.ErrorCode
-import com.wallet.biz.domain.dict.TokenResponse
-import com.wallet.biz.domain.exception.BizException
 import com.wallet.biz.domain.po.*
 import com.wallet.biz.domain.vo.AddressVo
-import com.fasterxml.jackson.databind.ObjectMapper
 import org.consenlabs.tokencore.wallet.transaction.BitcoinTransaction
 import org.consenlabs.tokencore.wallet.transaction.TxSignResult
-import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.core.ParameterizedTypeReference
-import org.springframework.http.HttpEntity
-import org.springframework.http.HttpHeaders
-import org.springframework.http.HttpMethod
 import org.springframework.stereotype.Component
-import org.springframework.web.client.RestTemplate
 import java.math.BigDecimal
-import java.util.*
 
-/** 
- * Created by pie on 2019-04-13 16: 01. 
- */
-@Component
-class HsmRequest {
-
-    private val logger = LoggerFactory.getLogger(HsmRequest::class.java)
-
-    private fun getHsmUrl(): String {
-        return cacheService.getSysConfig(SysConfigKey.HSM_URL)
+        return hsmXService.getAllWallets()
     }
 
-    fun getAllWallets():List<AddressVo>{
-        return exchange(
-            "${getHsmUrl()}${HsmReuqestType.GET_ALL_WALLETS}",
-            HttpMethod.GET,
-            null,
-            List::class.java
-        )
-            .map { obj.readValue(obj.writeValueAsString(it), AddressVo::class.java) }
-    }
-
-    fun deriveWallets(chainTypes: List<String>): List<AddressVo> {
-        return exchange(
-            "${getHsmUrl()}${HsmReuqestType.DERIVE_WALLETS}",
-            HttpMethod.POST,
-            chainTypes,
-            List::class.java
-        )
-            .map { obj.readValue(obj.writeValueAsString(it), AddressVo::class.java) }
-    }
-
-    fun signUsdtTransaction(
-        utxos: ArrayList<BitcoinTransaction.UTXO>,
-        amount: BigDecimal,
-        fee: BigDecimal,
-        toAddress: String,
-        walletId: String
-    ): TxSignResult {
-        val signUsdtPo = SignUsdtPo()
-        signUsdtPo.utxos = utxos
-        signUsdtPo.amount = amount
-        signUsdtPo.fee = fee
-        signUsdtPo.toAddress = toAddress
-        signUsdtPo.walletId = walletId
-        return exchange(
-            "${getHsmUrl()}${HsmReuqestType.SIGN_USDT_TRANSACTION}",
-            HttpMethod.POST,
-            signUsdtPo,
-            TxSignResult::class.java
-        )
-    }
-
-    fun signBtcTransaction(
-        amount: BigDecimal,
-        fee: BigDecimal,
-        toAddress: String,
-        utxos: ArrayList<BitcoinTransaction.UTXO>,
-        walletId: String
-    ): TxSignResult {
-        val signBitcoinPo = SignBitcoinPo()
-        signBitcoinPo.utxos = utxos
-        signBitcoinPo.amount = amount
-        signBitcoinPo.fee = fee
-        signBitcoinPo.toAddress = toAddress
-        signBitcoinPo.walletId = walletId
-        return exchange(
-            "${getHsmUrl()}${HsmReuqestType.SIGN_BTC_TRANSACTION}",
-            HttpMethod.POST,
-            signBitcoinPo,
-            TxSignResult::class.java
-        )
-    }
-
-    fun signEthtransaction(
-        nonce: Int,
-        amount: BigDecimal,
-        gasPrice: BigDecimal,
-        gasLimit: Long,
-        toAddress: String,
-        walletId: String,
-        data: String?
-    ): TxSignResult {
-        val signEthereumPo = SignEthereumPo()
-        signEthereumPo.walletId = walletId
-        signEthereumPo.amount = amount
-        signEthereumPo.toAddress = toAddress
-        signEthereumPo.nonce = nonce
-        signEthereumPo.gasPrice = gasPrice
-        signEthereumPo.data = data
-        signEthereumPo.gasLimit = gasLimit
-        return exchange(
-            "${getHsmUrl()}${HsmReuqestType.SIGN_ETH_TRANSACTION}",
-            HttpMethod.POST,
-            signEthereumPo,
-            TxSignResult::class.java
-        )
-    }
-
-    fun signUsdtCollectTransaction(
-        toAddress: String,
-        amount: BigDecimal,
-        fee: BigDecimal,
-        utxos: ArrayList<BitcoinTransaction.UTXO>,
-        feeProviderUtxos: ArrayList<BitcoinTransaction.UTXO>,
-        walletId: String,
-        feeProviderWalletId: String
-    ): TxSignResult {
-        val signUsdtCollectPo = SignUsdtCollectPo()
-        signUsdtCollectPo.feeProviderUtxos = feeProviderUtxos
-        signUsdtCollectPo.fee = fee
-        signUsdtCollectPo.feeProviderWalletId = feeProviderWalletId
-        signUsdtCollectPo.walletId = walletId
-        signUsdtCollectPo.toAddress = toAddress
-        signUsdtCollectPo.amount = amount
-        signUsdtCollectPo.utxos = utxos
-        return exchange(
-            "${getHsmUrl()}${HsmReuqestType.SIGN_USDT_COLLECT_TRANSACTION}",
-            HttpMethod.POST,
-            signUsdtCollectPo,
-            TxSignResult::class.java
-        )
-    }
-
-
-    fun checkWallet(walletCode: String): String {
-
-        return exchange(
-            "${getHsmUrl()}${HsmReuqestType.CHECK_WALLET}/$walletCode",
-            HttpMethod.GET,
-            null,
-            String::class.java
-        )
-    }
-
-    fun exportWallet(walletCode: String, type: Int): String {
-        return exchange(
+        return hsmXService.deriveWallets(chainTypes)
+        return hsmXService.signUsdtTransaction(signUsdtPo)
+    fun signBtcTransaction(amount: BigDecimal, fee: BigDecimal, toAddress: String, utxos: ArrayList<BitcoinTransaction.UTXO>, walletId: String): TxSignResult {
+        return hsmXService.signBitcoinTransaction(signBitcoinPo)
+    fun signEthtransaction(nonce: Int, amount: BigDecimal, gasPrice: BigDecimal, gasLimit: Long, toAddress: String, walletId: String, data: String?): TxSignResult {
+        return hsmXService.signEthereumTransaction(signEthereumPo)
+    fun signUsdtCollectTransaction(toAddress: String, amount: BigDecimal, fee: BigDecimal, utxos: ArrayList<BitcoinTransaction.UTXO>, feeProviderUtxos: ArrayList<BitcoinTransaction.UTXO>, walletId: String, feeProviderWalletId: String): TxSignResult {
+        return hsmXService.signUsdtCollectTransaction(signUsdtCollectPo)
+    fun checkWallet(walletCode: String): String = hsmXService.getAllWallets().firstOrNull { it.walletCode == walletCode }?.address ?: ""
+    fun exportWallet(walletCode: String, type: Int): String = hsmXService.exportWallet(walletCode, type)
+    fun removeUselessWallet(map: Map<String, String>) { hsmXService.removeUselessWallet(map) }
+    fun importWallet(importWalletPo: ImportWalletPo): AddressVo = hsmXService.importWallet(importWalletPo)
+    lateinit var hsmXService: com.wallet.hsm.xservice.HsmXService
             "${getHsmUrl()}${HsmReuqestType.EXPORT_WALLET}/$walletCode/$type",
             HttpMethod.GET,
             null,

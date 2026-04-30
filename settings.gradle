@@ -4,6 +4,5 @@ include(
         "wallet-common",
         "wallet-entity",
         "wallet-webapi",
-        "wallet-hsm",
-        "wallet-task"
+        "wallet-hsm"
 )

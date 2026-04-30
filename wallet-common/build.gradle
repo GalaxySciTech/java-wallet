@@ -5,6 +5,7 @@ jar.enabled = true
 
 dependencies {
     api project(":wallet-entity")
+    implementation project(":wallet-hsm")
     implementation 'commons-codec:commons-codec:1.16.0'
     implementation 'org.bitcoinj:bitcoinj-core:0.14.7'
 }

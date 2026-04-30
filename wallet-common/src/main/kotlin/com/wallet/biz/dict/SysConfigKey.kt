@@ -1,7 +1,24 @@
 package com.wallet.biz.dict
 
-/** 
- * Created by pie on 2020/7/24 18: 50. 
+    DEPOSIT_NOTIFY_MODE("post","充值同步模式，支持 post","充值通知"),
+    SCHEDULER_DEPOSIT_SCAN_ENABLED("true", "充值扫描任务开关", "任务调度"),
+    SCHEDULER_DEPOSIT_SCAN_MS("15000", "充值扫描任务间隔毫秒", "任务调度"),
+    SCHEDULER_CHAIN_SYNC_ENABLED("true", "区块同步任务开关", "任务调度"),
+    SCHEDULER_CHAIN_SYNC_MS("20000", "区块同步任务间隔毫秒", "任务调度"),
+    SCHEDULER_SWEEP_ENABLED("false", "归集任务开关", "任务调度"),
+    SCHEDULER_SWEEP_MS("30000", "归集任务间隔毫秒", "任务调度"),
+    SCHEDULER_FEE_SUPPLY_ENABLED("false", "手续费补充任务开关", "任务调度"),
+    SCHEDULER_FEE_SUPPLY_MS("30000", "手续费补充任务间隔毫秒", "任务调度"),
+    SWEEP_ENABLED("false", "归集开关", "归集配置"),
+    SWEEP_TO_ADDRESS("", "归集地址", "归集配置"),
+    SWEEP_MIN_AMOUNT("0", "最小归集金额", "归集配置"),
+    WITHDRAW_ENABLED("false", "提现开关", "提现配置"),
+    WITHDRAW_MAX_AUTO_AMOUNT("0", "自动提现上限", "提现配置"),
+    WITHDRAW_DAILY_LIMIT("0", "每日提现限额", "提现配置"),
+    FEE_SUPPLY_ENABLED("false", "手续费补充开关", "手续费配置"),
+    FEE_SUPPLY_FROM_ADDRESS("", "手续费补充地址", "手续费配置"),
+    FEE_SUPPLY_MIN_GAS_BALANCE("0", "最小gas余额", "手续费配置");
+
  */
 enum class SysConfigKey(var defaultValue:String,var description:String,var group:String) {
 

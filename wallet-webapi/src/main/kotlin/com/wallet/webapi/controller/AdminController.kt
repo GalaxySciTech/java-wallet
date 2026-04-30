@@ -1,6 +1,8 @@
 package com.wallet.webapi.controller
 
 import com.wallet.biz.domain.dict.TokenResponse
+import com.wallet.biz.service.ConfigService
+import com.wallet.biz.dict.SysConfigKey
 import com.wallet.biz.xservice.AdminXService
 import com.wallet.entity.domain.*
 import io.swagger.v3.oas.annotations.Operation
@@ -10,6 +12,7 @@ import jakarta.servlet.http.HttpServletRequest
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 
@@ -17,6 +20,34 @@ import org.springframework.web.bind.annotation.RestController
 @Tag(name = "Admin API", description = "管理后台接口")
 @RequestMapping("admin")
 class AdminController {
+
+    @GetMapping("config/rpc")
+    @Operation(summary = "RPC配置")
+    fun getRpcConfig(): TokenResponse<Map<String, String>> {
+        val keys = listOf(SysConfigKey.ETH_RPC_URL, SysConfigKey.OMNI_RPC_URL, SysConfigKey.BCH_RPC_URL, SysConfigKey.TRX_API_URL)
+        return TokenResponse(keys.associate { it.name to maskSensitive(it.name, findConfig(it.name)) })
+    }
+
+    @PutMapping("config/rpc")
+    @Operation(summary = "更新RPC配置")
+    fun putRpcConfig(key: String, value: String): TokenResponse<Any> {
+        saveConfigByKey(key, value)
+        return TokenResponse()
+    }
+
+    @GetMapping("config/scheduler")
+    @Operation(summary = "调度配置")
+    fun getSchedulerConfig(): TokenResponse<Map<String, String>> {
+        val keys = SysConfigKey.values().filter { it.name.startsWith("SCHEDULER_") }
+        return TokenResponse(keys.associate { it.name to findConfig(it.name) })
+    }
+
+    @PutMapping("config/scheduler")
+    @Operation(summary = "更新调度配置")
+    fun putSchedulerConfig(key: String, value: String): TokenResponse<Any> {
+        saveConfigByKey(key, value)
+        return TokenResponse()
+    }
 
     @GetMapping("get_user")
     @Operation(summary = "获取用户")
@@ -177,4 +208,22 @@ class AdminController {
 
     @Resource
     lateinit var request: HttpServletRequest
+
+    @Autowired
+    lateinit var configService: ConfigService
+
+    private fun findConfig(key: String): String = configService.findAll().firstOrNull { it.configKey == key }?.configValue ?: ""
+
+    private fun saveConfigByKey(key: String, value: String) {
+        val item = configService.findAll().firstOrNull { it.configKey == key } ?: Config().also { it.configKey = key }
+        if (value.isBlank()) return
+        item.configValue = value
+        configService.save(item)
+    }
+
+    private fun maskSensitive(key: String, value: String): String {
+        if (!key.contains("PASSWORD") && !key.contains("KEY")) return value
+        if (value.length <= 8) return "****"
+        return value.take(4) + "****" + value.takeLast(4)
+    }
 }

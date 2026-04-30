@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController
 @Tag(name = "Admin API", description = "管理后台接口")
 @RequestMapping("admin")
 class AdminController {
+    private val auditLogs = mutableListOf<Map<String, String>>()
 
     @GetMapping("config/rpc")
     @Operation(summary = "RPC配置")
@@ -32,6 +33,7 @@ class AdminController {
     @Operation(summary = "更新RPC配置")
     fun putRpcConfig(key: String, value: String): TokenResponse<Any> {
         saveConfigByKey(key, value)
+        audit("UPDATE_RPC_CONFIG", key, value)
         return TokenResponse()
     }
 
@@ -46,10 +48,46 @@ class AdminController {
     @Operation(summary = "更新调度配置")
     fun putSchedulerConfig(key: String, value: String): TokenResponse<Any> {
         saveConfigByKey(key, value)
+        audit("UPDATE_SCHEDULER_CONFIG", key, value)
         return TokenResponse()
     }
 
-    @GetMapping("get_user")
+    
+
+    @GetMapping("config/chains")
+    @Operation(summary = "链配置")
+    fun getChainConfig(): TokenResponse<Map<String, String>> {
+        val keys = listOf(SysConfigKey.ETH_SCAN_BACK, SysConfigKey.BTC_SCAN_BACK, SysConfigKey.TRX_SCAN_BACK)
+        return TokenResponse(keys.associate { it.name to findConfig(it.name) })
+    }
+
+    @PutMapping("config/chains")
+    @Operation(summary = "更新链配置")
+    fun putChainConfig(key: String, value: String): TokenResponse<Any> {
+        saveConfigByKey(key, value)
+        audit("UPDATE_CHAIN_CONFIG", key, value)
+        return TokenResponse()
+    }
+
+    @GetMapping("config/security")
+    @Operation(summary = "安全配置")
+    fun getSecurityConfig(): TokenResponse<Map<String, String>> {
+        val keys = listOf("SECURITY_ALLOW_EXPORT_PRIVATE_KEY", "SECURITY_REQUIRE_2FA_ON_EXPORT", "SECURITY_MASK_SENSITIVE_FIELDS")
+        return TokenResponse(keys.associateWith { maskSensitive(it, findConfig(it)) })
+    }
+
+    @PutMapping("config/security")
+    @Operation(summary = "更新安全配置")
+    fun putSecurityConfig(key: String, value: String): TokenResponse<Any> {
+        saveConfigByKey(key, value)
+        audit("UPDATE_SECURITY_CONFIG", key, value)
+        return TokenResponse()
+    }
+
+    @GetMapping("config/audit-logs")
+    @Operation(summary = "审计日志")
+    fun getAuditLogs(): TokenResponse<List<Map<String, String>>> = TokenResponse(auditLogs.takeLast(200).reversed())
+@GetMapping("get_user")
     @Operation(summary = "获取用户")
     fun getUser(): TokenResponse<User> {
         val user = request.getAttribute("user") as User
@@ -219,6 +257,10 @@ class AdminController {
         if (value.isBlank()) return
         item.configValue = value
         configService.save(item)
+    }
+
+    private fun audit(action: String, key: String, value: String) {
+        auditLogs.add(mapOf("action" to action, "key" to key, "value" to maskSensitive(key, value), "operator" to ((request.getHeader("X-Admin-User") ?: "system")), "time" to java.time.Instant.now().toString()))
     }
 
     private fun maskSensitive(key: String, value: String): String {

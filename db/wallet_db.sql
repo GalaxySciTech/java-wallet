@@ -269,3 +269,116 @@ INSERT INTO `withdraw` VALUES (1, 'dsadsa', 11.000000000000000000, 'cadsa', 'dsa
 COMMIT;
 
 SET FOREIGN_KEY_CHECKS = 1;
+
+-- ----------------------------
+-- Table structure for wallet_admin_audit_log
+-- ----------------------------
+DROP TABLE IF EXISTS `wallet_admin_audit_log`;
+CREATE TABLE `wallet_admin_audit_log` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `operator` varchar(128) DEFAULT NULL,
+  `action` varchar(128) DEFAULT NULL,
+  `target_key` varchar(255) DEFAULT NULL,
+  `after_value` varchar(1024) DEFAULT NULL,
+  `request_ip` varchar(128) DEFAULT NULL,
+  `user_agent` varchar(512) DEFAULT NULL,
+  `create_time` datetime DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- ----------------------------
+-- Table structure for wallet_rpc_config
+-- ----------------------------
+DROP TABLE IF EXISTS `wallet_rpc_config`;
+CREATE TABLE `wallet_rpc_config` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `chain` varchar(64) NOT NULL,
+  `rpc_url` varchar(512) DEFAULT NULL,
+  `rpc_username` varchar(255) DEFAULT NULL,
+  `rpc_password` varchar(255) DEFAULT NULL,
+  `rpc_api_key` varchar(255) DEFAULT NULL,
+  `rpc_timeout_ms` int(11) DEFAULT NULL,
+  `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uk_wallet_rpc_chain` (`chain`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- ----------------------------
+-- Table structure for wallet_scheduler_config
+-- ----------------------------
+DROP TABLE IF EXISTS `wallet_scheduler_config`;
+CREATE TABLE `wallet_scheduler_config` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `chain` varchar(64) NOT NULL,
+  `deposit_scan_enabled` tinyint(1) DEFAULT 1,
+  `deposit_scan_interval_ms` bigint(20) DEFAULT 15000,
+  `sweep_enabled` tinyint(1) DEFAULT 0,
+  `sweep_interval_ms` bigint(20) DEFAULT 30000,
+  `fee_supply_enabled` tinyint(1) DEFAULT 0,
+  `fee_supply_interval_ms` bigint(20) DEFAULT 30000,
+  `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uk_wallet_scheduler_chain` (`chain`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- ----------------------------
+-- Table structure for wallet_chain_config
+-- ----------------------------
+DROP TABLE IF EXISTS `wallet_chain_config`;
+CREATE TABLE `wallet_chain_config` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `chain` varchar(64) NOT NULL,
+  `enabled` tinyint(1) DEFAULT 1,
+  `deposit_scan_enabled` tinyint(1) DEFAULT 1,
+  `withdraw_enabled` tinyint(1) DEFAULT 0,
+  `confirmations` int(11) DEFAULT 12,
+  `start_block` bigint(20) DEFAULT 0,
+  `current_block` bigint(20) DEFAULT 0,
+  `scan_batch_size` int(11) DEFAULT 100,
+  `scan_interval_ms` bigint(20) DEFAULT 15000,
+  `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uk_wallet_chain_chain` (`chain`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+DROP TABLE IF EXISTS `wallet_sweep_config`;
+CREATE TABLE `wallet_sweep_config` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `chain` varchar(64) NOT NULL,
+  `sweep_enabled` tinyint(1) DEFAULT 0,
+  `sweep_to_address` varchar(255) DEFAULT NULL,
+  `min_sweep_amount` varchar(64) DEFAULT '0',
+  `reserve_amount` varchar(64) DEFAULT '0',
+  PRIMARY KEY (`id`), UNIQUE KEY `uk_wallet_sweep_chain` (`chain`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+DROP TABLE IF EXISTS `wallet_withdraw_config`;
+CREATE TABLE `wallet_withdraw_config` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `chain` varchar(64) NOT NULL,
+  `withdraw_enabled` tinyint(1) DEFAULT 0,
+  `manual_review_enabled` tinyint(1) DEFAULT 1,
+  `max_auto_withdraw_amount` varchar(64) DEFAULT '0',
+  `daily_withdraw_limit` varchar(64) DEFAULT '0',
+  PRIMARY KEY (`id`), UNIQUE KEY `uk_wallet_withdraw_chain` (`chain`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+DROP TABLE IF EXISTS `wallet_fee_supply_config`;
+CREATE TABLE `wallet_fee_supply_config` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `chain` varchar(64) NOT NULL,
+  `fee_supply_enabled` tinyint(1) DEFAULT 0,
+  `fee_supply_from_address` varchar(255) DEFAULT NULL,
+  `min_gas_balance` varchar(64) DEFAULT '0',
+  `target_gas_balance` varchar(64) DEFAULT '0',
+  PRIMARY KEY (`id`), UNIQUE KEY `uk_wallet_fee_supply_chain` (`chain`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+DROP TABLE IF EXISTS `wallet_security_config`;
+CREATE TABLE `wallet_security_config` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `allow_export_private_key` tinyint(1) DEFAULT 0,
+  `export_private_key_require2fa` tinyint(1) DEFAULT 1,
+  `allow_update_rpc_by_admin` tinyint(1) DEFAULT 1,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

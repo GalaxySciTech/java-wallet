@@ -1,94 +1,49 @@
-
-
-allprojects {
-
-    ext {
-        querydslVersion = "5.0.0"
-        tokenVersion = "3.0.0"
-    }
-    repositories {
-        mavenLocal()
-        maven { url 'https://maven.aliyun.com/repository/public/' }
-        maven { url 'https://jitpack.io' }
-        mavenCentral()
-    }
-
-    tasks.withType(JavaCompile) {
-        options.encoding = "UTF-8"
-    }
-
+plugins {
+  id 'org.springframework.boot' version '3.1.3'
+  id 'io.spring.dependency-management' version '1.1.4'
+  id 'org.jetbrains.kotlin.jvm' version '1.9.10'
+  id 'org.jetbrains.kotlin.plugin.spring' version '1.9.10'
 }
 
+group = 'com.wallet'
+version = '3.0.0'
 
-subprojects {
-
-
-    group 'com.wallet'
-    version "$tokenVersion"
-
-    apply plugin: 'java'
-    apply plugin: 'kotlin'
-    apply plugin: 'idea'
-    apply plugin: 'org.springframework.boot'
-    apply plugin: "io.spring.dependency-management"
-
-    sourceCompatibility = 17
-
-    compileKotlin {
-        kotlinOptions.jvmTarget = "17"
-    }
-    compileTestKotlin {
-        kotlinOptions.jvmTarget = "17"
-    }
-
-    tasks.withType(JavaCompile) {
-        options.encoding = "UTF-8"
-    }
-
-
-    dependencies {
-        implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
-        implementation "org.jetbrains.kotlin:kotlin-reflect:$kotlinVersion"
-        implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlinVersion"
-        implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3"
-        implementation "org.springframework.boot:spring-boot-starter-web:$springBootVersion"
-        implementation "org.springframework.boot:spring-boot-starter-cache:$springBootVersion"
-        implementation "org.springframework.boot:spring-boot-starter-data-jpa:$springBootVersion"
-        implementation 'com.zaxxer:HikariCP:5.0.1'
-        implementation 'com.mysql:mysql-connector-j:8.2.0'
-        implementation 'org.apache.commons:commons-lang3:3.14.0'
-        compileOnly 'org.projectlombok:lombok:1.18.30'
-        annotationProcessor 'org.projectlombok:lombok:1.18.30'
-        implementation 'commons-beanutils:commons-beanutils:1.9.4'
-        implementation 'org.web3j:core:4.10.3'
-        implementation 'wf.bitcoin:bitcoin-rpc-client:1.2.4'
-
-        implementation "org.springframework.boot:spring-boot-starter-amqp:$springBootVersion"
-        implementation 'com.github.ben-manes.caffeine:caffeine:3.1.8'
-        implementation 'com.github.sealedtx:bitcoin-cash-converter:1.0'
-        implementation 'com.xuxueli:xxl-job-core:2.4.0'
-        implementation 'com.github.GalaxySciTech:tokencore:1.3.0'
-
-        implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.3.0'
-
-        testImplementation "org.springframework.boot:spring-boot-starter-test:$springBootVersion"
-    }
-
+java { sourceCompatibility = JavaVersion.VERSION_17 }
+repositories {
+  mavenLocal()
+  maven { url 'https://maven.aliyun.com/repository/public/' }
+  maven { url 'https://jitpack.io' }
+  mavenCentral()
 }
 
-buildscript {
+dependencies {
+  implementation "org.jetbrains.kotlin:kotlin-stdlib"
+  implementation "org.jetbrains.kotlin:kotlin-reflect"
+  implementation 'org.springframework.boot:spring-boot-starter-web'
+  implementation 'org.springframework.boot:spring-boot-starter-cache'
+  implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+  implementation 'com.zaxxer:HikariCP:5.0.1'
+  implementation 'com.mysql:mysql-connector-j:8.2.0'
+  implementation 'org.apache.commons:commons-lang3:3.14.0'
+  implementation 'commons-beanutils:commons-beanutils:1.9.4'
+  implementation 'org.web3j:core:4.10.3'
+  implementation 'wf.bitcoin:bitcoin-rpc-client:1.2.4'
+  implementation 'com.github.ben-manes.caffeine:caffeine:3.1.8'
+  implementation 'com.github.sealedtx:bitcoin-cash-converter:1.0'
+  implementation 'com.github.galaxyscitech:tokencore:2.0.0'
+  implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.3.0'
+  implementation 'commons-codec:commons-codec:1.16.0'
+  implementation 'org.bitcoinj:bitcoinj-core:0.14.7'
+  implementation 'io.github.qyvlik:io.eblock.eos-eos4j:1.0.1'
+  implementation 'com.querydsl:querydsl-sql:5.0.0'
+  implementation 'com.querydsl:querydsl-jpa:5.0.0'
+  testImplementation 'org.springframework.boot:spring-boot-starter-test'
+}
 
-    ext.kotlinVersion = '1.9.10'
-    ext.springBootVersion = '3.1.3'
+tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).configureEach {
+  kotlinOptions.jvmTarget = '17'
+}
 
-    repositories {
-        maven { url 'https://maven.aliyun.com/repository/public/' }
-        mavenLocal()
-        mavenCentral()
-    }
-    dependencies {
-        classpath "io.spring.gradle:dependency-management-plugin:1.1.4"
-        classpath "org.springframework.boot:spring-boot-gradle-plugin:$springBootVersion"
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
-    }
+springBoot {
+  mainClass = 'com.wallet.WebApiApplicationKt'
 }

@@ -638,6 +638,7 @@ open class WalletXServiceImpl : WalletXService, LogService() {
 
         log("进行${ChainType.ETHEREUM} 代币${sendPo.symbol} 交易签名")
         val txSignResult = hsmRequest.signEthtransaction(
+            ChainType.ETHEREUM,
             ethNonce.nonce,
             BigDecimal.ZERO,
             BigDecimal(gasPrice),
@@ -694,6 +695,7 @@ open class WalletXServiceImpl : WalletXService, LogService() {
         log("开始${ChainType.ETHEREUM}转币 转出nonce为${ethNonce.nonce}")
         log("正在签名中")
         val txSignResult = hsmRequest.signEthtransaction(
+            ChainType.ETHEREUM,
             ethNonce.nonce,
             sendPo.amount!!,
             BigDecimal(gasPrice),
@@ -755,6 +757,7 @@ open class WalletXServiceImpl : WalletXService, LogService() {
         utxos = checkAmount(utxos, totalAmount)
         log("正在签名中")
         val txSignResult = hsmRequest.signBtcTransaction(
+            chainType,
             sendPo.amount!!,
             fee.toBigDecimal().divide(BigDecimal.TEN.pow(8)),
             sendPo.to!!,
@@ -783,34 +786,16 @@ open class WalletXServiceImpl : WalletXService, LogService() {
 
 
     override fun getUtxos(chainType: String, address: String): ArrayList<BitcoinTransaction.UTXO> {
-        val symbol: String
-        val rpc = when (chainType) {
-            ChainType.BITCOIN -> {
-                symbol = "btc"
-                rpcClient.omniRpc()
-            }
-            ChainType.LITECOIN -> {
-                symbol = "ltc"
-                rpcClient.ltcRpc()
-            }
-            ChainType.BITCOINCASH -> {
-                symbol = "bch"
-                rpcClient.bchRpc()
-            }
-            ChainType.BITCOINSV -> {
-                symbol = "bsv"
-                rpcClient.bsvRpc()
-            }
-            ChainType.DASH -> {
-                symbol = "dash"
-                rpcClient.dashRpc()
-            }
-            ChainType.DOGECOIN -> {
-                symbol = "doge"
-                rpcClient.dogeRpc()
-            }
+        val symbol = when (chainType) {
+            ChainType.BITCOIN -> "btc"
+            ChainType.LITECOIN -> "ltc"
+            ChainType.BITCOINCASH -> "bch"
+            ChainType.BITCOINSV -> "bsv"
+            ChainType.DASH -> "dash"
+            ChainType.DOGECOIN -> "doge"
             else -> throw BizException(ErrorCode.NO_THIS_CHAIN_TYPE)
         }
+        val rpc = rpcClient.bitcoinStyleRpc(chainType)
         val utxos = ArrayList<BitcoinTransaction.UTXO>()
         rpc.listUnspent(0, Int.MAX_VALUE, address).forEach {
             if (it.confirmations() > -1) {

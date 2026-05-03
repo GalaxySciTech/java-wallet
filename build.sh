@@ -1,6 +1,6 @@
 #!/bin/bash
-./gradlew bootRepackage
-rm -rf build/*
-mv wallet-webapi/build/libs/*.jar build/
-mv wallet-task/build/libs/*.jar build/
-mv wallet-hsm/build/libs/*.jar build/
+set -e
+./gradlew bootJar --no-daemon -x test
+rm -rf build/dist
+mkdir -p build/dist
+cp build/libs/*.jar build/dist/

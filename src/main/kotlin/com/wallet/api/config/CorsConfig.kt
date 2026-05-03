@@ -1,4 +1,4 @@
-package com.wallet.webapi.config
+package com.wallet.api.config
 
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration

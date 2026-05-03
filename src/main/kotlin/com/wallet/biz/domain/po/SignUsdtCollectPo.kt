@@ -8,6 +8,7 @@ import java.util.ArrayList
  * Created by pie on 2019-04-16 11: 47. 
  */
 class SignUsdtCollectPo{
+    var chainId: String? = null
 
     var walletId: String? = null
 

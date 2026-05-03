@@ -14,6 +14,9 @@ public class WalletChainConfig {
     private Boolean enabled;
     private Boolean depositScanEnabled;
     private Boolean withdrawEnabled;
+    /** TOKENCORE (default) or EXTERNAL — see application.yml wallet.signing */
+    @Column(name = "signing_backend", length = 32)
+    private String signingBackend = "TOKENCORE";
     private Integer confirmations;
     private Long startBlock;
     private Long currentBlock;
@@ -31,6 +34,8 @@ public class WalletChainConfig {
     public void setDepositScanEnabled(Boolean depositScanEnabled) { this.depositScanEnabled = depositScanEnabled; }
     public Boolean getWithdrawEnabled() { return withdrawEnabled; }
     public void setWithdrawEnabled(Boolean withdrawEnabled) { this.withdrawEnabled = withdrawEnabled; }
+    public String getSigningBackend() { return signingBackend; }
+    public void setSigningBackend(String signingBackend) { this.signingBackend = signingBackend; }
     public Integer getConfirmations() { return confirmations; }
     public void setConfirmations(Integer confirmations) { this.confirmations = confirmations; }
     public Long getStartBlock() { return startBlock; }

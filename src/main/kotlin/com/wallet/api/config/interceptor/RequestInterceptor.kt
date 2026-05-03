@@ -1,4 +1,4 @@
-package com.wallet.webapi.config.interceptor
+package com.wallet.api.config.interceptor
 
 import com.wallet.biz.domain.PageEntity
 import com.wallet.biz.domain.dict.ErrorCode

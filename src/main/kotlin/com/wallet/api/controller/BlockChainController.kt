@@ -1,6 +1,6 @@
-package com.wallet.webapi.controller
+package com.wallet.api.controller
 
-import com.wallet.biz.dict.TokenKey
+import com.wallet.biz.token.TokenCatalogService
 import com.wallet.biz.domain.dict.TokenResponse
 import com.wallet.biz.domain.po.CalculationFeePo
 import com.wallet.biz.domain.po.GetAddressBalancePo
@@ -86,11 +86,14 @@ class BlockChainController {
     @GetMapping("get_support_token")
     @Operation(summary = "获得支持币种")
     fun getSupportToken(): TokenResponse<Map<String, Any>> {
-        val chainList = TokenKey.getChainList()
-        val symbolList = TokenKey.getSymbolList()
+        val chainList = tokenCatalogService.distinctChains()
+        val symbolList = tokenCatalogService.distinctSymbols()
         return TokenResponse(mapOf("chain" to chainList, "symbol" to symbolList))
     }
 
     @Autowired
     lateinit var blockChainXService: BlockChainXService
+
+    @Autowired
+    lateinit var tokenCatalogService: TokenCatalogService
 }

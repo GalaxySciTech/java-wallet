@@ -9,6 +9,9 @@ import java.util.ArrayList
  * Created by pie on 2019-03-05 13: 24. 
  */
 class SignBitcoinPo {
+    /** Optional tokencore chain id string, e.g. ChainId.BITCOIN_TESTNET; default mainnet in service */
+    var chainId: String? = null
+
     var walletId: String? = null
 
     var toAddress: String? = null

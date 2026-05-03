@@ -19,7 +19,7 @@ services:
   app:
     build:
       context: .
-      dockerfile: wallet-webapi/Dockerfile
+      dockerfile: Dockerfile
     ports:
       - "8080:8080"
     environment:

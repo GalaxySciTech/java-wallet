@@ -8,6 +8,9 @@ import java.math.BigInteger
  */
 class SignEthereumPo{
 
+    /** Optional tokencore chain id; default ETHEREUM_MAINNET in service */
+    var chainId: String? = null
+
     var walletId: String? = null
 
     var toAddress: String? = null

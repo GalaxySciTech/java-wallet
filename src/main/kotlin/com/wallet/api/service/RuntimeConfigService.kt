@@ -1,4 +1,4 @@
-package com.wallet.webapi.service
+package com.wallet.api.service
 
 import com.wallet.entity.domain.*
 import com.wallet.repository.*

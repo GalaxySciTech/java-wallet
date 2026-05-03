@@ -1,6 +1,6 @@
-package com.wallet.webapi.config
+package com.wallet.api.config
 
-import com.wallet.webapi.config.interceptor.RequestInterceptor
+import com.wallet.api.config.interceptor.RequestInterceptor
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Configuration
 import org.springframework.web.servlet.config.annotation.CorsRegistry

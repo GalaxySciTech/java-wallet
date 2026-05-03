@@ -331,6 +331,7 @@ CREATE TABLE `wallet_chain_config` (
   `enabled` tinyint(1) DEFAULT 1,
   `deposit_scan_enabled` tinyint(1) DEFAULT 1,
   `withdraw_enabled` tinyint(1) DEFAULT 0,
+  `signing_backend` varchar(32) NOT NULL DEFAULT 'TOKENCORE' COMMENT 'TOKENCORE|EXTERNAL',
   `confirmations` int(11) DEFAULT 12,
   `start_block` bigint(20) DEFAULT 0,
   `current_block` bigint(20) DEFAULT 0,

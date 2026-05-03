@@ -3,6 +3,7 @@ package com.wallet.biz.rpc
 import com.wallet.biz.dict.SysConfigKey
 import com.wallet.biz.rpc.BitcoinFork.*
 import com.fasterxml.jackson.databind.JsonNode
+import org.consenlabs.tokencore.wallet.model.ChainType
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
@@ -28,17 +29,21 @@ class RpcClient {
             lastGasPrice = gasPrice
             gasPrice
         } catch (e: Exception) {
-            logger.warn("Failed to get gas price from node, falling back to external API: ${e.message}")
+            logger.warn("Failed to get gas price from node: ${e.message}")
+            val fallbackUrl = cacheService.getSysConfig(SysConfigKey.ETH_GAS_FALLBACK_URL).trim()
+            if (fallbackUrl.isBlank()) {
+                logger.warn("ETH_GAS_FALLBACK_URL empty; using cached gas gwei: $lastGasPrice")
+                return lastGasPrice
+            }
             try {
                 val gasLevel = cacheService.getSysConfig(SysConfigKey.ETH_GAS_LEVEL)
                 val gasProp = cacheService.getSysConfig(SysConfigKey.GAS_PROP).toBigDecimal()
-                val node =
-                    restTemplate.getForObject("https://ethgasstation.info/json/ethgasAPI.json", JsonNode::class.java)
+                val node = restTemplate.getForObject(fallbackUrl, JsonNode::class.java)
                 val gasPrice = (node!![gasLevel].decimalValue() * gasProp).toInt() / 10
                 lastGasPrice = gasPrice
                 gasPrice
             } catch (e2: Exception) {
-                logger.warn("Failed to get gas price from external API, using cached value: $lastGasPrice")
+                logger.warn("Gas price fallback HTTP failed: ${e2.message}; using cached value: $lastGasPrice")
                 lastGasPrice
             }
         }
@@ -117,6 +122,19 @@ class RpcClient {
     fun trxApi(): TrxApi {
         val url = cacheService.getSysConfig(SysConfigKey.TRX_API_URL)
         return TrxApi(url, restTemplate)
+    }
+
+    /** UTXO-style chains that use a Bitcoin JSON-RPC compatible node. */
+    fun bitcoinStyleRpc(chainType: String): BitcoinJSONRPCClient {
+        return when (chainType) {
+            ChainType.BITCOIN -> omniRpc()
+            ChainType.LITECOIN -> ltcRpc()
+            ChainType.BITCOINCASH -> bchRpc()
+            ChainType.BITCOINSV -> bsvRpc()
+            ChainType.DASH -> dashRpc()
+            ChainType.DOGECOIN -> dogeRpc()
+            else -> throw IllegalStateException("No UTXO RPC client for chain: $chainType")
+        }
     }
 
     @Autowired

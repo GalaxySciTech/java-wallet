@@ -79,6 +79,7 @@ class SendFeeServiceImpl : SendFeeService{
                         
                         
                         val txSignResult = hsmRequest.signEthtransaction(
+                            ChainType.ETHEREUM,
                             sendNonce,
                             reduceAmount,
                             BigDecimal(rpcClient.getGasPrice()),

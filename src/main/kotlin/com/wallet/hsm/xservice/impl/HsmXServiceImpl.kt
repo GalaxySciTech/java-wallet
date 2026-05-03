@@ -1,5 +1,6 @@
 package com.wallet.hsm.xservice.impl
 
+import com.wallet.biz.config.WalletProperties
 import com.wallet.biz.domain.dict.ErrorCode
 import com.wallet.biz.domain.dict.KeyType
 import com.wallet.biz.domain.exception.BizException
@@ -57,8 +58,9 @@ class HsmXServiceImpl : HsmXService {
             signBitcoinPo.fee!!.multiply(BigDecimal.TEN.pow(8)).toLong(),
             signBitcoinPo.utxos
         )
+        val chainIdStr = signBitcoinPo.chainId ?: walletProperties.tokencore.bitcoinChainId
         return bitcoinTransaction.signTransaction(
-            ChainId.BITCOIN_MAINNET.toString(),
+            chainIdStr,
             keyStoreProperties.password,
             wallet
         )
@@ -74,8 +76,9 @@ class HsmXServiceImpl : HsmXService {
             signEthereumPo.amount!!.multiply(BigDecimal.TEN.pow(18)).toBigInteger(),
             signEthereumPo.data
         )
+        val chainIdStr = signEthereumPo.chainId ?: walletProperties.tokencore.ethereumChainId
         return ethereumTransaction.signTransaction(
-            ChainId.ETHEREUM_MAINNET.toString(),
+            chainIdStr,
             keyStoreProperties.password,
             wallet
         )
@@ -103,8 +106,9 @@ class HsmXServiceImpl : HsmXService {
             signUsdtPo.fee!!.multiply(BigDecimal.TEN.pow(8)).toLong(),
             signUsdtPo.utxos
         )
+        val chainIdStr = signUsdtPo.chainId ?: walletProperties.tokencore.bitcoinChainId
         return bitcoinTransaction.signUsdtTransaction(
-            ChainId.BITCOIN_MAINNET.toString(),
+            chainIdStr,
             keyStoreProperties.password,
             wallet
         )
@@ -120,8 +124,9 @@ class HsmXServiceImpl : HsmXService {
             signUsdtCollectPo.fee!!.multiply(BigDecimal.TEN.pow(8)).toLong(),
             signUsdtCollectPo.utxos
         )
+        val chainIdStr = signUsdtCollectPo.chainId ?: walletProperties.tokencore.bitcoinChainId
         return bitcoinTransaction.signUsdtCollectTransaction(
-            ChainId.BITCOIN_MAINNET.toString(),
+            chainIdStr,
             keyStoreProperties.password,
             wallet, feeProviderWallet, signUsdtCollectPo.feeProviderUtxos
         )
@@ -159,6 +164,18 @@ class HsmXServiceImpl : HsmXService {
             ChainType.TRON -> {
                 name = "TRON"
                 path = BIP44Util.TRON_PATH
+            }
+            ChainType.EOS -> {
+                name = "EOS"
+                path = BIP44Util.EOS_PATH
+            }
+            ChainType.DOGECOIN -> {
+                name = "DOGE"
+                path = BIP44Util.DOGECOIN_MAINNET_PATH
+            }
+            ChainType.FILECOIN -> {
+                name = "FIL"
+                path = BIP44Util.FILECOIN_PATH
             }
             else -> throw BizException(ErrorCode.NO_THIS_TYPE)
         }
@@ -253,4 +270,7 @@ class HsmXServiceImpl : HsmXService {
 
     @Autowired
     lateinit var keyStoreProperties: KeyStoreProperties
+
+    @Autowired
+    lateinit var walletProperties: WalletProperties
 }

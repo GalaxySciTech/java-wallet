@@ -1,4 +1,4 @@
-package com.wallet.webapi.config.filter
+package com.wallet.api.config.filter
 
 import jakarta.servlet.*
 import jakarta.servlet.http.HttpServletRequest

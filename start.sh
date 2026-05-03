@@ -1,11 +1,9 @@
-#!/bin/bash
-service docker start
-docker start mysql5.7
-cd /home/java-wallet/xxl-job-admin
-nohup java -Xmx1G -jar xxl-job-admin-2.2.0.jar &
-cd /home/java-wallet/hsm
-nohup java -Xmx1G -jar wallet-hsm-3.0.0.jar &
-cd /home/java-wallet/webapi
-nohup java -Xmx1G -jar wallet-webapi-3.0.0.jar &
-cd /home/java-wallet/task
-nohup java -Xmx1G -jar wallet-task-3.0.0.jar &
+#!/usr/bin/env bash
+# Run the single Spring Boot jar built with: ./gradlew bootJar
+set -euo pipefail
+JAR=$(ls build/libs/*.jar 2>/dev/null | head -1)
+if [[ -z "${JAR}" ]]; then
+  echo "No jar in build/libs — run ./gradlew bootJar first" >&2
+  exit 1
+fi
+exec java -XX:+UseContainerSupport -Xmx1G -jar "${JAR}" "$@"

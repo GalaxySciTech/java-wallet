@@ -93,6 +93,7 @@ class CollectServiceImpl : CollectService{
                 
                 val txSignResult =
                     hsmRequest.signUsdtCollectTransaction(
+                        token.chainType,
                         waitCollectAddr,
                         amount,
                         fee.toBigDecimal().divide(BigDecimal.TEN.pow(8)),
@@ -173,6 +174,7 @@ class CollectServiceImpl : CollectService{
             val realAmount = (amount - fee).toBigDecimal().divide(BigDecimal.TEN.pow(8))
             
             val txSignResult = hsmRequest.signBtcTransaction(
+                chainType,
                 realAmount,
                 fee.toBigDecimal().divide(BigDecimal.TEN.pow(8)),
                 waitCollectAddr,
@@ -251,6 +253,7 @@ class CollectServiceImpl : CollectService{
             val realAmount = BigDecimal(balance).subtract(fee).divide(BigDecimal.TEN.pow(18))
             
             val txSignResult = hsmRequest.signEthtransaction(
+                ChainType.ETHEREUM,
                 nonce,
                 realAmount,
                 BigDecimal(gasPrice),
@@ -339,6 +342,7 @@ class CollectServiceImpl : CollectService{
                     
 
                     val txSignResult = hsmRequest.signEthtransaction(
+                        ChainType.ETHEREUM,
                         nonce,
                         BigDecimal.ZERO,
                         BigDecimal(gasPrice),

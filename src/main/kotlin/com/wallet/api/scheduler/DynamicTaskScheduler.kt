@@ -1,11 +1,11 @@
-package com.wallet.webapi.scheduler
+package com.wallet.api.scheduler
 
 import com.wallet.biz.cache.CacheService
 import com.wallet.biz.dict.SysConfigKey
 import com.wallet.biz.handler.service.CollectService
 import com.wallet.biz.handler.service.SendFeeService
 import com.wallet.biz.handler.service.SynService
-import com.wallet.webapi.service.RuntimeConfigService
+import com.wallet.api.service.RuntimeConfigService
 import jakarta.annotation.PostConstruct
 import org.slf4j.LoggerFactory
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler
@@ -29,7 +29,11 @@ class DynamicTaskScheduler(
         scheduler.setThreadNamePrefix("wallet-scheduler-")
         scheduler.initialize()
         register("deposit", SysConfigKey.SCHEDULER_DEPOSIT_SCAN_MS, SysConfigKey.SCHEDULER_DEPOSIT_SCAN_ENABLED) { synService.synDeposit() }
-        register("sync", SysConfigKey.SCHEDULER_CHAIN_SYNC_MS, SysConfigKey.SCHEDULER_CHAIN_SYNC_ENABLED) {
+        register(
+            "sync",
+            SysConfigKey.SCHEDULER_CHAIN_SYNC_MS,
+            SysConfigKey.SCHEDULER_CHAIN_SYNC_ENABLED
+        ) {
             synService.synETH(); synService.synOMNI(); synService.synTRX(); synService.synImportAddress()
         }
         register("sweep", SysConfigKey.SCHEDULER_SWEEP_MS, SysConfigKey.SCHEDULER_SWEEP_ENABLED) {

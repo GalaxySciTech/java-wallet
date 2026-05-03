@@ -9,11 +9,11 @@ It provides unified wallet management, blockchain synchronization, deposit detec
 
 This repository is converging to a **single-service architecture** to make deployment and operations simpler:
 
-- One startup service (`wallet-webapi` runtime)
+- One Spring Boot service (sources under [`src/`](src/); root Gradle module)
 - No RabbitMQ dependency
 - No xxl-job dependency
-- HSM capabilities invoked in-process
-- Unified tokencore dependency: `com.github.galaxyscitech:tokencore:2.0.0`
+- HSM / signing invoked in-process via [tokencore](https://github.com/GalaxySciTech/tokencore) `com.github.galaxyscitech:tokencore:2.0.1`
+- Optional **external HTTP signer** when `wallet_chain_config.signing_backend` = `EXTERNAL` (see `wallet.external-signer` in [`application.yml`](src/main/resources/application.yml))
 
 This means fewer moving parts, easier troubleshooting, and faster onboarding for developers and DevOps teams.
 
@@ -67,8 +67,26 @@ Services:
 ### Option B: Run locally with Gradle
 
 ```bash
-./gradlew :wallet-webapi:bootRun
+./gradlew bootRun
 ```
+
+Initialize the database from [`db/wallet_db.sql`](db/wallet_db.sql). If you already have `wallet_chain_config`, apply [`db/002_wallet_chain_signing_backend.sql`](db/002_wallet_chain_signing_backend.sql) for the `signing_backend` column.
+
+### Configuration highlights
+
+| Area | Notes |
+|------|--------|
+| JDBC | `DB_URL`, `DB_USERNAME`, `DB_PASSWORD` (see [`.env.example`](.env.example)) |
+| Keystore | `KEYSTORE_DIR`, `WALLET_KEYSTORE_PASSWORD` |
+| Testnet signing | `ETH_SIGN_CHAIN_ID` (e.g. `11155111` for Sepolia), `BTC_SIGN_CHAIN_ID` (`0` mainnet / `1` testnet) |
+| Metrics | Actuator: `/actuator/health`, `/actuator/prometheus` |
+| Gas fallback | Optional `ETH_GAS_FALLBACK_URL` in `sys_config` if the node does not expose `eth_gasPrice` |
+
+### H2 (testnet on-chain smoke)
+
+1. Point `ETH_RPC_URL` in `config` (or env) to a **Sepolia** (or other testnet) HTTP endpoint.
+2. Set `ETH_SIGN_CHAIN_ID=11155111` and fund a test hot wallet.
+3. Run `./gradlew bootRun` and exercise withdraw/collect paths from Swagger or your integration client.
 
 ---
 

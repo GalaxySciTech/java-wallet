@@ -1,4 +1,4 @@
-package com.wallet.webapi.controller
+package com.wallet.api.controller
 
 import com.wallet.biz.domain.dict.TokenResponse
 import com.wallet.biz.service.ConfigService

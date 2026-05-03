@@ -3,11 +3,10 @@
 项目正在收敛为**单体 Spring Boot 钱包服务**。
 
 ## 当前变化
-- 统一单服务启动（以 `wallet-webapi` 作为应用运行时）
-- 不再依赖 RabbitMQ
-- 不再依赖 xxl-job
-- HSM 能力改为进程内调用
-- tokencore 统一为 `com.github.galaxyscitech:tokencore:2.0.0`
+- **单模块**：源码仅在仓库根目录 [`src/`](src/)，Gradle 在根目录 [`build.gradle`](build.gradle)
+- 不再依赖 RabbitMQ / xxl-job
+- 签名与地址：**tokencore** `com.github.galaxyscitech:tokencore:2.0.1`（进程内）
+- 可选 **外部 HTTP 签名**：表 `wallet_chain_config.signing_backend = EXTERNAL`，配置 `wallet.external-signer.base-url`
 
 ## 快速开始
 ### 1）Docker Compose 启动
@@ -21,8 +20,12 @@ docker compose up -d --build
 
 ### 2）手动启动
 ```bash
-./gradlew :wallet-webapi:bootRun
+./gradlew bootRun
 ```
+
+数据库初始化见 [`db/wallet_db.sql`](db/wallet_db.sql)。若已有库，需增加 `signing_backend` 列时执行 [`db/002_wallet_chain_signing_backend.sql`](db/002_wallet_chain_signing_backend.sql)。
+
+环境变量示例：[`.env.example`](.env.example)。测试网链上冒烟：配置 Sepolia 等 `ETH_RPC_URL`，设置 `ETH_SIGN_CHAIN_ID=11155111`，准备测试资金后走 Swagger 提现/归集相关接口。
 
 ## 接口
 - 钱包接口：`/wallet/v1`

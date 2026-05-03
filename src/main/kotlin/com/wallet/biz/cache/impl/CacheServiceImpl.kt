@@ -2,7 +2,6 @@ package com.wallet.biz.cache.impl
 
 import com.wallet.biz.dict.SysConfigKey
 import com.wallet.biz.dict.AddressAdminKey
-import com.wallet.biz.dict.TokenKey
 import com.wallet.biz.domain.PageEntity
 import com.wallet.biz.domain.dict.ErrorCode
 import com.wallet.biz.domain.exception.BizException
@@ -109,21 +108,7 @@ open class CacheServiceImpl : com.wallet.biz.cache.CacheService {
 
     @Cacheable("wallet_token")
     override fun findAllWalletToken(): Map<String, Token> {
-        val map = walletTokenService.findAll().associateBy { "${it.tokenSymbol}_${it.chainType}" }
-        TokenKey.values().forEach {
-            val value = map["${it.tokenSymbol}_${it.chainType}"]
-            if (value == null) {
-                val walletToken = Token()
-                walletToken.chainType = it.chainType
-                walletToken.tokenSymbol = it.tokenSymbol
-                walletToken.gasLimit = it.gasLimit
-                walletToken.tokenAddress = it.tokenAddress
-                walletToken.minCollect=it.minCollect
-                walletTokenService.save(walletToken)
-            }
-
-        }
-        return map
+        return walletTokenService.findAll().associateBy { "${it.tokenSymbol}_${it.chainType}" }
     }
 
     override fun getWalletToken(chainType: String, tokenSymbol: String): Token {

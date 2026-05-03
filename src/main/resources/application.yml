@@ -1,18 +1,65 @@
 server:
-  port: ${SERVER_PORT:10888}
+  port: ${SERVER_PORT:8080}
 
 spring:
   application:
-    name: wallet-hsm
+    name: wallet-app
+  datasource:
+    url: ${DB_URL:jdbc:mysql://127.0.0.1:3306/wallet_db?allowMultiQueries=true&useSSL=false&characterEncoding=UTF-8&autoReconnect=true}
+    username: ${DB_USERNAME:root}
+    password: ${DB_PASSWORD:}
+    hikari:
+      maximum-pool-size: ${DB_POOL_MAX:20}
+      minimum-idle: ${DB_POOL_MIN:2}
+  jpa:
+    hibernate:
+      ddl-auto: none
+    show-sql: false
+    open-in-view: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQLDialect
+        jdbc:
+          batch_size: 50
+        order_inserts: true
+        order_updates: true
+  cache:
+    type: caffeine
 
 keystore:
   dir: ${KEYSTORE_DIR:/data/keystores}
-  password: ${KEYSTORE_PASSWORD:}
+  password: ${WALLET_KEYSTORE_PASSWORD:${KEYSTORE_PASSWORD:}}
   eosDepositAddress: ${EOS_DEPOSIT_ADDRESS:}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus,metrics
+  endpoint:
+    health:
+      show-details: when_authorized
+  metrics:
+    tags:
+      application: ${spring.application.name}
+
+wallet:
+  signing:
+    # TOKENCORE | EXTERNAL — per-chain override in wallet_chain_config.signing_backend when column exists; see WalletChainProperties
+    default-backend: TOKENCORE
+  tokencore:
+    # Ethereum chain id for signing (1 = mainnet, 11155111 = Sepolia, etc.)
+    ethereum-chain-id: ${ETH_SIGN_CHAIN_ID:1}
+    # Bitcoin chain id for signing (0 = mainnet, 1 = testnet)
+    bitcoin-chain-id: ${BTC_SIGN_CHAIN_ID:0}
+  external-signer:
+    base-url: ${EXTERNAL_SIGNER_BASE_URL:}
+    connect-timeout-ms: ${EXTERNAL_SIGNER_CONNECT_TIMEOUT_MS:5000}
+    read-timeout-ms: ${EXTERNAL_SIGNER_READ_TIMEOUT_MS:30000}
 
 logging:
   level:
     root: INFO
     com.wallet: ${LOG_LEVEL:INFO}
   file:
-    name: logs/wallet-hsm.log
+    name: logs/wallet-app.log
